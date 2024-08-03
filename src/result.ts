@@ -32,6 +32,14 @@ class Ok<T> {
     return this.value;
   }
 
+  unwrapErr(): never {
+    throw new UnwrapError("Called `unwrapErr` on an `Ok` value");
+  }
+
+  and<U, F>(other: Result<U, F>): Result<U, F> {
+    return other;
+  }
+
   map<U>(fn: (value: T) => U): Result<U, never> {
     return new Ok(fn(this.value));
   }
@@ -55,11 +63,19 @@ class Err<E> {
   }
 
   unwrap(): never {
-    throw this.error;
+    throw new UnwrapError("Called `unwrap` on an `Err` value");
   }
 
   unwrapOr<T>(defaultValue: T): T {
     return defaultValue;
+  }
+
+  unwrapErr(): E {
+    return this.error;
+  }
+
+  and<U, F>(_other: Result<U, F>): Result<U, F> {
+    return this as unknown as Result<U, F>;
   }
 
   map<U>(_fn: (value: never) => U): Result<U, E> {
