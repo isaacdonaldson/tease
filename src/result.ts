@@ -1,11 +1,11 @@
 import { TaggedError } from "./error";
 
 // Helper functions
-function ok<T>(value: T): Ok<T> {
+export function ok<T>(value: T): Ok<T> {
   return new Ok(value);
 }
 
-function err<E>(error: E): Err<E> {
+export function err<E>(error: E): Err<E> {
   return new Err(error);
 }
 
