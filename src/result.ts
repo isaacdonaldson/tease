@@ -55,6 +55,10 @@ class Ok<T> {
   mapErr<F>(_fn: (error: never) => F): Result<T, F> {
     return this as unknown as Result<T, F>;
   }
+
+  flatten<U>(this: Ok<Result<U, never>>): Result<U, never> {
+    return this.value;
+  }
 }
 
 class Err<E> {
@@ -100,6 +104,10 @@ class Err<E> {
 
   mapErr<F>(fn: (error: E) => F): Result<never, F> {
     return new Err(fn(this.error));
+  }
+
+  flatten<U>(): Result<U, E> {
+    return this as unknown as Result<U, E>;
   }
 }
 
