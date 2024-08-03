@@ -36,6 +36,10 @@ class Ok<T> {
     throw new UnwrapError("Called `unwrapErr` on an `Ok` value");
   }
 
+  unwrapOrElse(_fn: (err: never) => T): T {
+    return this.value;
+  }
+
   and<U, F>(other: Result<U, F>): Result<U, F> {
     return other;
   }
@@ -76,6 +80,10 @@ class Err<E> {
 
   unwrapErr(): E {
     return this.error;
+  }
+
+  unwrapOrElse<T>(fn: (err: E) => T): T {
+    return fn(this.error);
   }
 
   and<U, F>(_other: Result<U, F>): Result<U, F> {
