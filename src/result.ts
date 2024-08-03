@@ -40,6 +40,10 @@ class Ok<T> {
     return other;
   }
 
+  andThen<U, F>(fn: (value: T) => Result<U, F>): Result<U, F> {
+    return fn(this.value);
+  }
+
   map<U>(fn: (value: T) => U): Result<U, never> {
     return new Ok(fn(this.value));
   }
@@ -75,6 +79,10 @@ class Err<E> {
   }
 
   and<U, F>(_other: Result<U, F>): Result<U, F> {
+    return this as unknown as Result<U, F>;
+  }
+
+  andThen<U, F>(_fn: (value: never) => Result<U, F>): Result<U, F> {
     return this as unknown as Result<U, F>;
   }
 
