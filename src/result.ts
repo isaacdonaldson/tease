@@ -64,6 +64,10 @@ class Ok<T> {
     return this as unknown as Result<T, F>;
   }
 
+  mapOrElse<U>(_onErr: (error: never) => U, onOk: (value: T) => U): U {
+    return onOk(this.value);
+  }
+
   flatten<U>(this: Ok<Result<U, never>>): Result<U, never> {
     return this.value;
   }
@@ -129,6 +133,10 @@ class Err<E> {
 
   mapErr<F>(fn: (error: E) => F): Result<never, F> {
     return new Err(fn(this.error));
+  }
+
+  mapOrElse<F>(onErr: (error: E) => F, _onOk: (value: never) => F): F {
+    return onErr(this.error);
   }
 
   flatten<U>(): Result<U, E> {
