@@ -28,7 +28,7 @@ class Ok<T> {
     return pred(this.value);
   }
 
-  isErrAnd(_pred: (value: T) => boolean): boolean {
+  isErrAnd(_pred: (error: never) => boolean): boolean {
     return false;
   }
 
@@ -44,7 +44,7 @@ class Ok<T> {
     throw new UnwrapError("Called `unwrapErr` on an `Ok` value");
   }
 
-  unwrapOrElse(_fn: (err: never) => T): T {
+  unwrapOrElse(_fn: (error: never) => T): T {
     return this.value;
   }
 
@@ -91,11 +91,11 @@ class Err<E> {
     return true;
   }
 
-  isOkAnd(_pred: (err: E) => boolean): boolean {
+  isOkAnd(_pred: (value: E) => boolean): boolean {
     return false;
   }
 
-  isErrAnd(pred: (err: E) => boolean): boolean {
+  isErrAnd(pred: (error: E) => boolean): boolean {
     return pred(this.error);
   }
 
@@ -111,7 +111,7 @@ class Err<E> {
     return this.error;
   }
 
-  unwrapOrElse<T>(fn: (err: E) => T): T {
+  unwrapOrElse<T>(fn: (error: E) => T): T {
     return fn(this.error);
   }
 
