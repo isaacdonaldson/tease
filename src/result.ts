@@ -59,6 +59,15 @@ class Ok<T> {
   flatten<U>(this: Ok<Result<U, never>>): Result<U, never> {
     return this.value;
   }
+
+  inspect(fn: (value: T) => void): this {
+    fn(this.value);
+    return this;
+  }
+
+  inspectErr(_fn: (error: never) => void): this {
+    return this;
+  }
 }
 
 class Err<E> {
@@ -108,6 +117,15 @@ class Err<E> {
 
   flatten<U>(): Result<U, E> {
     return this as unknown as Result<U, E>;
+  }
+
+  inspect(_fn: (value: never) => void): this {
+    return this;
+  }
+
+  inspectErr(fn: (error: E) => void): this {
+    fn(this.error);
+    return this;
   }
 }
 
