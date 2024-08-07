@@ -24,6 +24,14 @@ class Ok<T> {
     return false;
   }
 
+  isOkAnd(pred: (value: T) => boolean): boolean {
+    return pred(this.value);
+  }
+
+  isErrAnd(_pred: (value: T) => boolean): boolean {
+    return false;
+  }
+
   unwrap(): T {
     return this.value;
   }
@@ -81,6 +89,14 @@ class Err<E> {
 
   isErr(): this is Err<E> {
     return true;
+  }
+
+  isOkAnd(_pred: (err: E) => boolean): boolean {
+    return false;
+  }
+
+  isErrAnd(pred: (err: E) => boolean): boolean {
+    return pred(this.error);
   }
 
   unwrap(): never {
