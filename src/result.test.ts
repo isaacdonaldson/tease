@@ -302,6 +302,7 @@ describe('Result', () => {
       expect(Result.fromNullable(null).unwrapErr()).toBe('The value provided was Nullable');
       expect(Result.fromNullable(undefined).unwrapErr()).toBe('The value provided was Nullable');
     });
+
     it('fromNullableWith Error should return Err with provided error for null or undefined values', () => {
       expect(Result.fromNullableWithError(null, 'Custom error').unwrapErr()).toBe('Custom error');
       expect(Result.fromNullableWithError(undefined, { code: 404 }).unwrapErr()).toEqual({ code: 404 });
@@ -314,6 +315,11 @@ describe('Result', () => {
       expect(() => Result.fromNullableWithError(undefined, undefined)).toThrow(
         "Both provided values are Nullable and a Result cannot be created"
       );
+    });
+
+    it('fromNullableWithError should work with at least one being non-null', () => {
+      expect(Result.fromNullableWithError(42, undefined).unwrap()).toBe(42)
+      expect(Result.fromNullableWithError(undefined, 'error').unwrapErr()).toBe('error')
     });
 
     it('try should return Err with TryCatchError for thrown errors', () => {

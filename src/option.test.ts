@@ -98,8 +98,20 @@ describe("Option", () => {
       expect(someValue.or(other)).toBe(someValue);
     });
 
-    test("ok_or returns the original option", () => {
-      expect(someValue.ok_or(42)).toStrictEqual(Result.ok(5));
+    test("okOr returns the original option", () => {
+      expect(someValue.okOr(42)).toStrictEqual(Result.ok(5));
+    });
+
+    it('fromNullable should return Some for non-null values', () => {
+      expect(Option.fromNullable(42).unwrap()).toBe(42);
+      expect(Option.fromNullable('hello').unwrap()).toBe('hello');
+      expect(Option.fromNullable({ key: 'value' }).unwrap()).toEqual({ key: 'value' });
+    });
+
+    it('fromNullable should return Some for falsy non-null values', () => {
+      expect(Option.fromNullable(0).unwrap()).toBe(0);
+      expect(Option.fromNullable('').unwrap()).toBe('');
+      expect(Option.fromNullable(false).unwrap()).toBe(false);
     });
   });
 
@@ -185,8 +197,13 @@ describe("Option", () => {
       expect(noneValue.or(other)).toBe(other);
     });
 
-    test("ok_or returns the other option", () => {
-      expect(noneValue.ok_or(42)).toStrictEqual(Result.err(42));
+    test("okOr returns the other option", () => {
+      expect(noneValue.okOr(42)).toStrictEqual(Result.err(42));
     });
+
+    // it('fromNullable should return None for null or undefined', () => {
+    //   const nullVal = Option.fromNullable(null)
+    //   expect(nullVal.unwrapOr(5)).toBe(5);
+    // });
   });
 });

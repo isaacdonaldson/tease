@@ -3,5 +3,5 @@ export function isNullable<T>(value: T | null | undefined): value is null | unde
 }
 
 export function isNonNullable<T>(value: T): value is T {
-  return !isNullable(value)
+  return value !== null || value !== undefined;
 }

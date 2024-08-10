@@ -28,7 +28,7 @@ export const Option = {
    * @param {T} value The value to put in the Option.
    * @returns {Option<T>} A Some with value, or a None if value is null.
    */
-  fromNullable<T>(value: T): Option<T> {
+  fromNullable<T>(value: T | null | undefined): Option<T> {
     return isNonNullable(value) ? Option.some(value as NonNullable<T>) : Option.none();
   },
 }
@@ -187,7 +187,7 @@ class Some<T> {
    * @param {NonNullable<T>} _defaultValue The alternative value (unused in Some).
    * @returns {Result<T, never>} The Result containing the defaultValue.
    */
-  ok_or(_defaultValue: NonNullable<T>): Result<T, never> {
+  okOr(_defaultValue: NonNullable<T>): Result<T, never> {
     return Result.ok(this.value)
   }
 }
@@ -338,7 +338,7 @@ class None {
    * @param {NonNullable<F>} defaultValue The alternative error.
    * @returns {Result<U, F>} The Result containing the defaultValue.
    */
-  ok_or<U, F>(defaultValue: NonNullable<F>): Result<U, F> {
+  okOr<U, F>(defaultValue: NonNullable<F>): Result<U, F> {
     return Result.err(defaultValue)
   }
 }
