@@ -1,5 +1,5 @@
 import { Option } from "../src/option";
-import { Result } from "./result"
+import { Result } from "./result";
 
 describe("Option", () => {
   describe("Some", () => {
@@ -9,50 +9,50 @@ describe("Option", () => {
       someValue = Option.some(5);
     });
 
-    test("isSome returns true", () => {
+    it("isSome returns true", () => {
       expect(someValue.isSome()).toBe(true);
     });
 
-    test("isNone returns false", () => {
+    it("isNone returns false", () => {
       expect(someValue.isNone()).toBe(false);
     });
 
-    test("isSomeAnd returns true for matching predicate", () => {
+    it("isSomeAnd returns true for matching predicate", () => {
       expect(someValue.isSomeAnd((v) => v > 3)).toBe(true);
     });
 
-    test("isSomeAnd returns false for non-matching predicate", () => {
+    it("isSomeAnd returns false for non-matching predicate", () => {
       expect(someValue.isSomeAnd((v) => v < 3)).toBe(false);
     });
 
-    test("unwrap returns the value", () => {
+    it("unwrap returns the value", () => {
       expect(someValue.unwrap()).toBe(5);
     });
 
-    test("unwrapOr returns the value", () => {
+    it("unwrapOr returns the value", () => {
       expect(someValue.unwrapOr(10)).toBe(5);
     });
 
-    test("unwrapOrElse returns the value", () => {
+    it("unwrapOrElse returns the value", () => {
       expect(someValue.unwrapOrElse(() => 10)).toBe(5);
     });
 
-    test("and returns the other option", () => {
+    it("and returns the other option", () => {
       const other = Option.some(10);
       expect(someValue.and(other)).toBe(other);
     });
 
-    test("andThen applies the function", () => {
+    it("andThen applies the function", () => {
       const result = someValue.andThen((v) => Option.some(v * 2));
       expect(result.unwrap()).toBe(10);
     });
 
-    test("map applies the function", () => {
+    it("map applies the function", () => {
       const result = someValue.map((v) => v * 2);
       expect(result.unwrap()).toBe(10);
     });
 
-    test("mapOrElse applies the onSome function", () => {
+    it("mapOrElse applies the onSome function", () => {
       const result = someValue.mapOrElse(
         () => 0,
         (v) => v * 2,
@@ -60,57 +60,59 @@ describe("Option", () => {
       expect(result).toBe(10);
     });
 
-    test("filter returns Some for matching predicate", () => {
+    it("filter returns Some for matching predicate", () => {
       const result = someValue.filter((v) => v > 3);
       expect(result.isSome()).toBe(true);
       expect(result.unwrap()).toBe(5);
     });
 
-    test("filter returns None for non-matching predicate", () => {
+    it("filter returns None for non-matching predicate", () => {
       const result = someValue.filter((v) => v < 3);
       expect(result.isNone()).toBe(true);
     });
 
-    test("flatten returns the inner Some for Option type", () => {
+    it("flatten returns the inner Some for Option type", () => {
       const nestedOption = Option.some(Option.some(5));
       expect(nestedOption.flatten()).toStrictEqual(Option.some(5));
     });
 
-    test("flatten returns the inner None for Option type", () => {
+    it("flatten returns the inner None for Option type", () => {
       const nestedOption = Option.some(Option.none());
       expect(nestedOption.flatten()).toStrictEqual(Option.none());
     });
 
-    test("flatten returns the None for None type", () => {
-      const nestedOption = Option.none()
+    it("flatten returns the None for None type", () => {
+      const nestedOption = Option.none();
       expect(nestedOption.flatten()).toStrictEqual(Option.none());
     });
 
-    test("inspect calls the function with the value", () => {
+    it("inspect calls the function with the value", () => {
       const mockFn = jest.fn();
       const result = someValue.inspect(mockFn);
       expect(mockFn).toHaveBeenCalledWith(5);
       expect(result).toBe(someValue);
     });
 
-    test("or returns the original Some", () => {
+    it("or returns the original Some", () => {
       const other = Option.some(10);
       expect(someValue.or(other)).toBe(someValue);
     });
 
-    test("okOr returns the original option", () => {
+    it("okOr returns the original option", () => {
       expect(someValue.okOr(42)).toStrictEqual(Result.ok(5));
     });
 
-    it('fromNullable should return Some for non-null values', () => {
+    it("fromNullable should return Some for non-null values", () => {
       expect(Option.fromNullable(42).unwrap()).toBe(42);
-      expect(Option.fromNullable('hello').unwrap()).toBe('hello');
-      expect(Option.fromNullable({ key: 'value' }).unwrap()).toEqual({ key: 'value' });
+      expect(Option.fromNullable("hello").unwrap()).toBe("hello");
+      expect(Option.fromNullable({ key: "value" }).unwrap()).toEqual({
+        key: "value",
+      });
     });
 
-    it('fromNullable should return Some for falsy non-null values', () => {
+    it("fromNullable should return Some for falsy non-null values", () => {
       expect(Option.fromNullable(0).unwrap()).toBe(0);
-      expect(Option.fromNullable('').unwrap()).toBe('');
+      expect(Option.fromNullable("").unwrap()).toBe("");
       expect(Option.fromNullable(false).unwrap()).toBe(false);
     });
   });
@@ -122,52 +124,52 @@ describe("Option", () => {
       noneValue = Option.none();
     });
 
-    test("isSome returns false", () => {
+    it("isSome returns false", () => {
       expect(noneValue.isSome()).toBe(false);
     });
 
-    test("isNone returns true", () => {
+    it("isNone returns true", () => {
       expect(noneValue.isNone()).toBe(true);
     });
 
-    test("isSomeAnd always returns false", () => {
+    it("isSomeAnd always returns false", () => {
       expect(noneValue.isSomeAnd(() => true)).toBe(false);
     });
 
-    test("unwrap throws UnwrapError", () => {
+    it("unwrap throws UnwrapError", () => {
       expect(() => noneValue.unwrap()).toThrow(
         "Called `unwrap` on a `None` value",
       );
     });
 
-    test("unwrapOr returns the default value", () => {
+    it("unwrapOr returns the default value", () => {
       expect(noneValue.unwrapOr(10)).toBe(10);
     });
 
-    test("unwrapOrElse calls the function", () => {
+    it("unwrapOrElse calls the function", () => {
       const mockFn = jest.fn(() => 10);
       expect(noneValue.unwrapOrElse(mockFn)).toBe(10);
       expect(mockFn).toHaveBeenCalled();
     });
 
-    test("and returns None", () => {
+    it("and returns None", () => {
       const other = Option.some(10);
       expect(noneValue.and(other)).toBe(noneValue);
     });
 
-    test("andThen returns None", () => {
+    it("andThen returns None", () => {
       const mockFn = jest.fn();
       expect(noneValue.andThen(mockFn)).toBe(noneValue);
       expect(mockFn).not.toHaveBeenCalled();
     });
 
-    test("map returns None", () => {
+    it("map returns None", () => {
       const mockFn = jest.fn();
       expect(noneValue.map(mockFn)).toBe(noneValue);
       expect(mockFn).not.toHaveBeenCalled();
     });
 
-    test("mapOrElse calls the onNone function", () => {
+    it("mapOrElse calls the onNone function", () => {
       const onNone = jest.fn(() => "default");
       const onSome = jest.fn();
       expect(noneValue.mapOrElse(onNone, onSome)).toBe("default");
@@ -175,29 +177,29 @@ describe("Option", () => {
       expect(onSome).not.toHaveBeenCalled();
     });
 
-    test("filter returns None", () => {
+    it("filter returns None", () => {
       const mockFn = jest.fn();
       expect(noneValue.filter(mockFn)).toBe(noneValue);
       expect(mockFn).not.toHaveBeenCalled();
     });
 
-    test("flatten returns None", () => {
+    it("flatten returns None", () => {
       expect(noneValue.flatten()).toBe(noneValue);
     });
 
-    test("inspect does not call the function", () => {
+    it("inspect does not call the function", () => {
       const mockFn = jest.fn();
       const result = noneValue.inspect(mockFn);
       expect(mockFn).not.toHaveBeenCalled();
       expect(result).toBe(noneValue);
     });
 
-    test("or returns the other option", () => {
+    it("or returns the other option", () => {
       const other = Option.some(10);
       expect(noneValue.or(other)).toBe(other);
     });
 
-    test("okOr returns the other option", () => {
+    it("okOr returns the other option", () => {
       expect(noneValue.okOr(42)).toStrictEqual(Result.err(42));
     });
 
