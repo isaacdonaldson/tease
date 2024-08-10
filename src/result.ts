@@ -1,4 +1,5 @@
 import { TaggedError } from "./error";
+import { isNonNullable } from "./utils"
 import { Option } from "./option";
 
 // NOTE: exporting this object allows use to use try as a function
@@ -31,7 +32,7 @@ export const Result = {
    * @returns {Result<T, E>} An Ok with value, or an Err result containing an error string.
    */
   fromNullable<T>(value: T): Result<T, string> {
-    return value ? Result.ok(value) : Result.err('The value provided was Nullable');
+    return isNonNullable(value) ? Result.ok(value as NonNullable<T>) : Result.err('The value provided was Nullable');
   },
 
   /**
@@ -41,10 +42,10 @@ export const Result = {
    * @returns {Result<T, E>} An Ok with value, or an Err result containing an error string.
    */
   fromNullableWithError<T, E>(value: T, error: E): Result<T, E> {
-    if (value) {
-      return Result.ok(value)
-    } else if (error) {
-      return Result.err(error)
+    if (isNonNullable(value)) {
+      return Result.ok(value as NonNullable<T>)
+    } else if (isNonNullable(error)) {
+      return Result.err(error as NonNullable<E>)
     } else {
       throw new ResultNonNullableError("Both provided values are Nullable and a Result cannot be created")
     }
@@ -504,7 +505,7 @@ export class ResultNonNullableError extends TaggedError {
  */
 export class TryCatchError extends TaggedError {
   readonly _tag = "TryCatchError" as const;
-  cause?: unknown
+  cause?: unknown;
 
   /**
     * Creates a new TryCatchError instance.
@@ -518,5 +519,10 @@ export class TryCatchError extends TaggedError {
     if (options?.cause) {
       this.cause = options.cause;
     }
+  }
+
+  getMessage(): string {
+    const cause = this.cause as { message: string };
+    return cause.message;
   }
 }
