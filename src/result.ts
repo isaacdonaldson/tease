@@ -1,24 +1,92 @@
 import { TaggedError } from "./error";
 import { some, none, Option } from "./option";
 
-/**
- * Creates an Ok result.
- * @template T The type of the value.
- * @param {NonNullable<T>} value The value to wrap in Ok.
- * @returns {Ok<T>} An Ok result containing the value.
- */
-export function ok<T>(value: NonNullable<T>): Ok<T> {
-  return new Ok(value);
-}
+// NOTE: export this object allows use to use try as a function
+// when it is a reserved keyword, can use like `Result.try`
+export const Result = {
+  /**
+   * Creates an Ok result.
+   * @template T The type of the value.
+   * @param {NonNullable<T>} value The value to wrap in Ok.
+   * @returns {Ok<T>} An Ok result containing the value.
+   */
+  ok<T>(value: NonNullable<T>): Ok<T> {
+    return new Ok(value);
+  },
 
-/**
- * Creates an Err result.
- * @template E The type of the error.
- * @param {NonNullable<E>} error The error to wrap in Err.
- * @returns {Err<E>} An Err result containing the error.
- */
-export function err<E>(error: NonNullable<E>): Err<E> {
-  return new Err(error);
+  /**
+  * Creates an Err result.
+  * @template E The type of the error.
+  * @param {NonNullable<E>} error The error to wrap in Err.
+  * @returns {Err<E>} An Err result containing the error.
+  */
+  err<E>(error: NonNullable<E>): Err<E> {
+    return new Err(error);
+  },
+
+  /**
+   * Creates a Result for the provided Nullable value.
+   * @template T The type of the value.
+   * @param {T} value The value to put in the Result.
+   * @returns {Result<T, E>} An Ok with value, or an Err result containing an error string.
+   */
+  fromNullable<T>(value: T): Result<T, string> {
+    return value ? Result.ok(value) : Result.err('The value provided was Nullable');
+  },
+
+  /**
+   * Creates a Result for the provided Nullable value.
+   * @template T The type of the value.
+   * @param {T} value The value to put in the Result.
+   * @returns {Result<T, E>} An Ok with value, or an Err result containing an error string.
+   */
+  fromNullableWithError<T, E>(value: T, error: E): Result<T, E> {
+    if (value) {
+      return Result.ok(value)
+    } else if (error) {
+      return Result.err(error)
+    } else {
+      throw new ResultNonNullableError("Both provided values are Nullable and a Result cannot be created")
+    }
+  },
+
+  /**
+   * Attempts to execute a function and returns the result in a `Result` type.
+   *
+   * If the function executes successfully, returns `Ok` with the result.
+   * If the function throws an error, returns `Err` with a `TryCatchError` containing the cause.
+   *
+   * @template T - The type of the result.
+   * @param {() => T} fn - The function to attempt to execute.
+   * @returns {Result<T, TryCatchError>} The result of the function execution.
+   */
+  try<T>(fn: () => T): Result<T, TryCatchError> {
+    try {
+      const res = fn();
+      return Result.fromNullableWithError(res, new TryCatchError("", {}));
+    } catch (e) {
+      return Result.err(new TryCatchError("An error was thrown during a Result.try call", { cause: e }))
+    }
+  },
+
+  /**
+   * Attempts to execute an asynchronous function and returns the result in a `Result` type.
+   *
+   * If the function executes successfully, returns a `Result` containing the value.
+   * If the function throws an error, returns a `Result` containing a `TryCatchError` with the original error as the cause.
+   *
+   * @template T - The type of the result.
+   * @param {() => Promise<T>} fn - The asynchronous function to attempt to execute.
+   * @returns {Promise<Result<T, TryCatchError>>} A promise that resolves to the result of the function execution.
+   */
+  async asyncTry<T>(fn: () => Promise<T>): Promise<Result<T, TryCatchError>> {
+    try {
+      const res = await fn();
+      return Result.fromNullableWithError(res, new TryCatchError("", {}));
+    } catch (e) {
+      return Result.err(new TryCatchError("An error was thrown during a Result.try call", { cause: e }))
+    }
+  }
 }
 
 /**
@@ -416,8 +484,39 @@ class Err<E> {
 
 /**
  * Error thrown when unwrapping a Result fails.
+ * @extends TaggedError
  */
 export class ResultUnwrapError extends TaggedError {
   readonly _tag = "ResultUnwrapError" as const;
 }
 
+/**
+ * Error thrown when creating a NonNullable Result fails.
+ * @extends TaggedError
+ */
+export class ResultNonNullableError extends TaggedError {
+  readonly _tag = "ResultNonNullableError " as const;
+}
+
+/**
+ * Error thrown when a try catch blocks has an error
+ * @extends TaggedError
+ */
+export class TryCatchError extends TaggedError {
+  readonly _tag = "TryCatchError" as const;
+  cause?: unknown
+
+  /**
+    * Creates a new TryCatchError instance.
+    *
+    * @param {string} message - The error message.
+    * @param {Object} [options] - Optional options.
+    * @param {unknown} [options.cause] - The cause of the error.
+    */
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message);
+    if (options?.cause) {
+      this.cause = options.cause;
+    }
+  }
+}
