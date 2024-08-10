@@ -1,4 +1,4 @@
-import { Result } from './result';
+import { Result, TryCatchError } from './result';
 import { Option } from './option';
 
 describe('Result', () => {
@@ -133,6 +133,63 @@ describe('Result', () => {
       const result: Result<number, string> = Result.ok(42);
       expect(result.ok()).toStrictEqual(Option.some(42));
     });
+
+    it('fromNullable should return Ok for non-null values', () => {
+      expect(Result.fromNullable(42).unwrap()).toBe(42);
+      expect(Result.fromNullable('hello').unwrap()).toBe('hello');
+      expect(Result.fromNullable({ key: 'value' }).unwrap()).toEqual({ key: 'value' });
+    });
+
+    it('fromNullable should return Ok for falsy non-null values', () => {
+      expect(Result.fromNullable(0).unwrap()).toBe(0);
+      expect(Result.fromNullable('').unwrap()).toBe('');
+      expect(Result.fromNullable(false).unwrap()).toBe(false);
+    });
+
+    it('fromNullableWithError should return Ok for non-null values', () => {
+      expect(Result.fromNullableWithError(42, 'error').unwrap()).toBe(42);
+      expect(Result.fromNullableWithError('hello', 'error').unwrap()).toBe('hello');
+      expect(Result.fromNullableWithError({ key: 'value' }, 'error').unwrap()).toEqual({ key: 'value' });
+    });
+
+    it('fromNullableWithError should return Ok for falsy non-null values', () => {
+      expect(Result.fromNullableWithError(0, 'error').unwrap()).toBe(0);
+      expect(Result.fromNullableWithError('', 'error').unwrap()).toBe('');
+      expect(Result.fromNullableWithError(false, 'error').unwrap()).toBe(false);
+    });
+
+    it('try should return Ok for successful function execution', () => {
+      const result = Result.try(() => 42);
+      expect(result.isOk()).toBe(true);
+      expect(result.unwrap()).toBe(42);
+    });
+
+    it('try should handle complex function executions', () => {
+      const result = Result.try(() => {
+        const obj = { key: 'value' };
+        return JSON.stringify(obj);
+      });
+      expect(result.isOk()).toBe(true);
+      expect(result.unwrap()).toBe('{"key":"value"}');
+    });
+
+    it('asyncTry should return Ok for successful async function execution', async () => {
+      const result = await Result.asyncTry(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return 42;
+      });
+      expect(result.isOk()).toBe(true);
+      expect(result.unwrap()).toBe(42);
+    });
+
+    it('asyncTry should handle complex async function executions', async () => {
+      const result = await Result.asyncTry(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        return new Promise(resolve => resolve(42))
+      });
+      expect(result.isOk()).toBe(true);
+      expect(result).toStrictEqual(Result.ok(42));
+    });
   });
 
   describe('Err', () => {
@@ -239,6 +296,69 @@ describe('Result', () => {
     it('ok should return None', () => {
       const result: Result<number, string> = Result.err('error');
       expect(result.ok()).toStrictEqual(Option.none());
+    });
+
+    it('fromNullable should return Err for null or undefined', () => {
+      expect(Result.fromNullable(null).unwrapErr()).toBe('The value provided was Nullable');
+      expect(Result.fromNullable(undefined).unwrapErr()).toBe('The value provided was Nullable');
+    });
+    it('fromNullableWith Error should return Err with provided error for null or undefined values', () => {
+      expect(Result.fromNullableWithError(null, 'Custom error').unwrapErr()).toBe('Custom error');
+      expect(Result.fromNullableWithError(undefined, { code: 404 }).unwrapErr()).toEqual({ code: 404 });
+    });
+
+    it('fromNullableWithError should throw ResultNonNullableError when both value and error are null', () => {
+      expect(() => Result.fromNullableWithError(null, null)).toThrow(
+        "Both provided values are Nullable and a Result cannot be created"
+      );
+      expect(() => Result.fromNullableWithError(undefined, undefined)).toThrow(
+        "Both provided values are Nullable and a Result cannot be created"
+      );
+    });
+
+    it('try should return Err with TryCatchError for thrown errors', () => {
+      const result = Result.try(() => {
+        throw new Error('Test error');
+      });
+      expect(result.isErr()).toBe(true);
+      const error = result.unwrapErr();
+      expect(error).toBeInstanceOf(TryCatchError);
+      expect(error.message).toBe('An error was thrown during a Result.try call');
+      expect(error.cause).toBeInstanceOf(Error);
+      expect(error.getMessage()).toBe('Test error');
+    });
+
+    it('try should return Err with TryCatchError for null or undefined results', () => {
+      const nullResult = Result.try(() => null);
+      expect(nullResult.isErr()).toBe(true);
+      expect(nullResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+
+      const undefinedResult = Result.try(() => undefined);
+      expect(undefinedResult.isErr()).toBe(true);
+      expect(undefinedResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+    });
+
+    it('asyncTry should return Err with TryCatchError for thrown errors in async functions', async () => {
+      const result = await Result.asyncTry(async () => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        throw new Error('Async test error');
+      });
+      expect(result.isErr()).toBe(true);
+      const error = result.unwrapErr();
+      expect(error).toBeInstanceOf(TryCatchError);
+      expect(error.message).toBe('An error was thrown during a Result.try call');
+      expect(error.cause).toBeInstanceOf(Error);
+      expect(error.getMessage()).toBe('Async test error');
+    });
+
+    it('asyncTry should return Err with TryCatchError for null or undefined results in async functions', async () => {
+      const nullResult = await Result.asyncTry(async () => null);
+      expect(nullResult.isErr()).toBe(true);
+      expect(nullResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+
+      const undefinedResult = await Result.asyncTry(async () => undefined);
+      expect(undefinedResult.isErr()).toBe(true);
+      expect(undefinedResult.unwrapErr()).toBeInstanceOf(TryCatchError);
     });
   });
 });
