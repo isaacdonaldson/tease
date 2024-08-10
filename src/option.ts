@@ -1,4 +1,5 @@
 import { TaggedError } from "./error";
+import { ok, err, Result } from "./result"
 
 /**
  * Creates a Some instance containing a non-null value.
@@ -165,6 +166,16 @@ class Some<T> {
   or(_other: Option<T>): Option<T> {
     return this;
   }
+
+  /**
+   * Converts a Some<T> to an Ok<T>
+   * @template T The type of the _defaultValue.
+   * @param {NonNullable<T>} _defaultValue The alternative value (unused in Some).
+   * @returns {Result<T, never>} The Result containing the defaultValue.
+   */
+  ok_or(_defaultValue: NonNullable<T>): Result<T, never> {
+    return ok(this.value)
+  }
 }
 
 /**
@@ -305,6 +316,16 @@ class None {
    */
   or<T>(other: Option<T>): Option<T> {
     return other;
+  }
+
+  /**
+   * Converts a None to an Err<E>
+   * @template E The type of the defaultValue.
+   * @param {NonNullable<F>} defaultValue The alternative error.
+   * @returns {Result<U, F>} The Result containing the defaultValue.
+   */
+  ok_or<U, F>(defaultValue: NonNullable<F>): Result<U, F> {
+    return err(defaultValue)
   }
 }
 

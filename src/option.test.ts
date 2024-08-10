@@ -1,4 +1,5 @@
 import { some, none, Option } from "../src/option";
+import { ok, err } from "./result"
 
 describe("Option", () => {
   describe("Some", () => {
@@ -96,6 +97,10 @@ describe("Option", () => {
       const other = some(10);
       expect(someValue.or(other)).toBe(someValue);
     });
+
+    test("ok_or returns the original option", () => {
+      expect(someValue.ok_or(42)).toStrictEqual(ok(5));
+    });
   });
 
   describe("none", () => {
@@ -178,6 +183,10 @@ describe("Option", () => {
     test("or returns the other option", () => {
       const other = some(10);
       expect(noneValue.or(other)).toBe(other);
+    });
+
+    test("ok_or returns the other option", () => {
+      expect(noneValue.ok_or(42)).toStrictEqual(err(42));
     });
   });
 });
