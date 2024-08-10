@@ -1,5 +1,5 @@
 import { TaggedError } from "./error";
-import { ok, err, Result } from "./result"
+import { Result } from "./result"
 
 /**
  * Creates a Some instance containing a non-null value.
@@ -174,7 +174,7 @@ class Some<T> {
    * @returns {Result<T, never>} The Result containing the defaultValue.
    */
   ok_or(_defaultValue: NonNullable<T>): Result<T, never> {
-    return ok(this.value)
+    return Result.ok(this.value)
   }
 }
 
@@ -325,7 +325,7 @@ class None {
    * @returns {Result<U, F>} The Result containing the defaultValue.
    */
   ok_or<U, F>(defaultValue: NonNullable<F>): Result<U, F> {
-    return err(defaultValue)
+    return Result.err(defaultValue)
   }
 }
 

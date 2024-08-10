@@ -1,5 +1,5 @@
 import { some, none, Option } from "../src/option";
-import { ok, err } from "./result"
+import { Result } from "./result"
 
 describe("Option", () => {
   describe("Some", () => {
@@ -99,7 +99,7 @@ describe("Option", () => {
     });
 
     test("ok_or returns the original option", () => {
-      expect(someValue.ok_or(42)).toStrictEqual(ok(5));
+      expect(someValue.ok_or(42)).toStrictEqual(Result.ok(5));
     });
   });
 
@@ -186,7 +186,7 @@ describe("Option", () => {
     });
 
     test("ok_or returns the other option", () => {
-      expect(noneValue.ok_or(42)).toStrictEqual(err(42));
+      expect(noneValue.ok_or(42)).toStrictEqual(Result.err(42));
     });
   });
 });

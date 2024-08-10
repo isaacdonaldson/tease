@@ -1,10 +1,10 @@
-import { ok, err, Result } from './result';
+import { Result } from './result';
 import { some, none } from './option';
 
 describe('Result', () => {
   describe('ok function', () => {
     it('should create an Ok instance', () => {
-      const result = ok(42);
+      const result = Result.ok(42);
       expect(result.isOk()).toBe(true);
       expect(result.isErr()).toBe(false);
     });
@@ -12,14 +12,14 @@ describe('Result', () => {
 
   describe('err function', () => {
     it('should create an Err instance', () => {
-      const result = err('error');
+      const result = Result.err('error');
       expect(result.isOk()).toBe(false);
       expect(result.isErr()).toBe(true);
     });
   });
 
   describe('Ok', () => {
-    const okResult: Result<number, string> = ok(42);
+    const okResult: Result<number, string> = Result.ok(42);
 
     it('isOk should return true', () => {
       expect(okResult.isOk()).toBe(true);
@@ -60,16 +60,16 @@ describe('Result', () => {
     });
 
     it('and should return the other result', () => {
-      const other = ok('test');
+      const other = Result.ok('test');
       expect(okResult.and(other)).toBe(other);
     });
 
     it('andThen should apply the function', () => {
-      expect(okResult.andThen(value => ok(value * 2))).toEqual(ok(84));
+      expect(okResult.andThen(value => Result.ok(value * 2))).toEqual(Result.ok(84));
     });
 
     it('map should apply the function', () => {
-      expect(okResult.map(value => value * 2)).toEqual(ok(84));
+      expect(okResult.map(value => value * 2)).toEqual(Result.ok(84));
     });
 
     it('mapErr should return the original result', () => {
@@ -81,8 +81,8 @@ describe('Result', () => {
     });
 
     it('flatten should return the inner result', () => {
-      const nestedOk = ok(ok(42));
-      expect(nestedOk.flatten()).toEqual(ok(42));
+      const nestedOk = Result.ok(Result.ok(42));
+      expect(nestedOk.flatten()).toEqual(Result.ok(42));
     });
 
     it('inspect should call the function and return self', () => {
@@ -100,22 +100,22 @@ describe('Result', () => {
     });
 
     it('or should return the Ok value when called on Ok', () => {
-      const result: Result<number, string> = ok(42);
-      const alternative: Result<number, string> = ok(24);
+      const result: Result<number, string> = Result.ok(42);
+      const alternative: Result<number, string> = Result.ok(24);
       expect(result.or(alternative).unwrap()).toBe(42);
     });
 
     it('or should work with mixed Ok and Err types', () => {
-      const okResult: Result<number, string> = ok(42);
-      const errResult: Result<number, string> = err('error');
+      const okResult: Result<number, string> = Result.ok(42);
+      const errResult: Result<number, string> = Result.err('error');
 
       expect(okResult.or(errResult).unwrap()).toBe(42);
       expect(errResult.or(okResult).unwrap()).toBe(42);
     });
 
     it('or should work with different Result types', () => {
-      const strResult: Result<string, number> = err(404);
-      const numResult: Result<number, string> = ok(42);
+      const strResult: Result<string, number> = Result.err(404);
+      const numResult: Result<number, string> = Result.ok(42);
 
       const combined = strResult.or(numResult);
       expect(combined.unwrap()).toBe(42);
@@ -125,18 +125,18 @@ describe('Result', () => {
     });
 
     it('err should return None', () => {
-      const result: Result<number, string> = ok(42);
+      const result: Result<number, string> = Result.ok(42);
       expect(result.err()).toStrictEqual(none());
     });
 
     it('ok should return Some', () => {
-      const result: Result<number, string> = ok(42);
+      const result: Result<number, string> = Result.ok(42);
       expect(result.ok()).toStrictEqual(some(42));
     });
   });
 
   describe('Err', () => {
-    const errResult: Result<number, string> = err('error');
+    const errResult: Result<number, string> = Result.err('error');
 
     it('isOk should return false', () => {
       expect(errResult.isOk()).toBe(false);
@@ -177,12 +177,12 @@ describe('Result', () => {
     });
 
     it('and should return the original error', () => {
-      const other = ok(42);
+      const other = Result.ok(42);
       expect(errResult.and(other)).toBe(errResult);
     });
 
     it('andThen should return the original error', () => {
-      expect(errResult.andThen(() => ok(42))).toBe(errResult);
+      expect(errResult.andThen(() => Result.ok(42))).toBe(errResult);
     });
 
     it('map should return the original error', () => {
@@ -190,7 +190,7 @@ describe('Result', () => {
     });
 
     it('mapErr should apply the function', () => {
-      expect(errResult.mapErr(error => error.toUpperCase())).toEqual(err('ERROR'));
+      expect(errResult.mapErr(error => error.toUpperCase())).toEqual(Result.err('ERROR'));
     });
 
     it('mapOrElse should apply the err function', () => {
@@ -216,28 +216,28 @@ describe('Result', () => {
     });
 
     it('or should return the alternative when called on Err', () => {
-      const result: Result<number, string> = err('error');
-      const alternative: Result<number, string> = ok(24);
+      const result: Result<number, string> = Result.err('error');
+      const alternative: Result<number, string> = Result.ok(24);
       expect(result.or(alternative).unwrap()).toBe(24);
     });
 
     it('or should maintain the correct type when chaining', () => {
-      const result: Result<number, string> = err('first error');
+      const result: Result<number, string> = Result.err('first error');
       const chain = result
-        .or(err('second error'))
-        .or(ok(42))
-        .or(ok(24));
+        .or(Result.err('second error'))
+        .or(Result.ok(42))
+        .or(Result.ok(24));
 
       expect(chain.unwrap()).toBe(42);
     });
 
     it('err should return Some', () => {
-      const result: Result<number, string> = err('error');
+      const result: Result<number, string> = Result.err('error');
       expect(result.err()).toStrictEqual(some('error'));
     });
 
     it('ok should return None', () => {
-      const result: Result<number, string> = err('error');
+      const result: Result<number, string> = Result.err('error');
       expect(result.ok()).toStrictEqual(none());
     });
   });
