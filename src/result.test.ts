@@ -1,4 +1,5 @@
 import { ok, err, Result } from './result';
+import { some, none, Option } from './option';
 
 describe('Result', () => {
   describe('ok function', () => {
@@ -97,6 +98,41 @@ describe('Result', () => {
       expect(mockFn).not.toHaveBeenCalled();
       expect(result).toBe(okResult);
     });
+
+    it('or should return the Ok value when called on Ok', () => {
+      const result: Result<number, string> = ok(42);
+      const alternative: Result<number, string> = ok(24);
+      expect(result.or(alternative).unwrap()).toBe(42);
+    });
+
+    it('or should work with mixed Ok and Err types', () => {
+      const okResult: Result<number, string> = ok(42);
+      const errResult: Result<number, string> = err('error');
+
+      expect(okResult.or(errResult).unwrap()).toBe(42);
+      expect(errResult.or(okResult).unwrap()).toBe(42);
+    });
+
+    it('or should work with different Result types', () => {
+      const strResult: Result<string, number> = err(404);
+      const numResult: Result<number, string> = ok(42);
+
+      const combined = strResult.or(numResult);
+      expect(combined.unwrap()).toBe(42);
+
+      // TypeScript should infer this as Result<string | number, never>
+      expect(combined.isOk()).toBe(true);
+    });
+
+    it('err should return None', () => {
+      const result: Result<number, string> = ok(42);
+      expect(() => result.err()).toStrictEqual(none());
+    });
+
+    it('ok should return Some', () => {
+      const result: Result<number, string> = ok(42);
+      expect(() => result.ok()).toStrictEqual(some(42));
+    });
   });
 
   describe('Err', () => {
@@ -177,6 +213,32 @@ describe('Result', () => {
       const result = errResult.inspectErr(mockFn);
       expect(mockFn).toHaveBeenCalledWith('error');
       expect(result).toBe(errResult);
+    });
+
+    it('or should return the alternative when called on Err', () => {
+      const result: Result<number, string> = err('error');
+      const alternative: Result<number, string> = ok(24);
+      expect(result.or(alternative).unwrap()).toBe(24);
+    });
+
+    it('or should maintain the correct type when chaining', () => {
+      const result: Result<number, string> = err('first error');
+      const chain = result
+        .or(err('second error'))
+        .or(ok(42))
+        .or(ok(24));
+
+      expect(chain.unwrap()).toBe(42);
+    });
+
+    it('err should return Some', () => {
+      const result: Result<number, string> = err('error');
+      expect(() => result.err()).toStrictEqual(some('error'));
+    });
+
+    it('ok should return None', () => {
+      const result: Result<number, string> = err('error');
+      expect(() => result.ok()).toStrictEqual(none());
     });
   });
 });

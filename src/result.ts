@@ -1,4 +1,5 @@
 import { TaggedError } from "./error";
+import { some, none, Option } from "./option";
 
 /**
  * Creates an Ok result.
@@ -6,7 +7,7 @@ import { TaggedError } from "./error";
  * @param {T} value The value to wrap in Ok.
  * @returns {Ok<T>} An Ok result containing the value.
  */
-export function ok<T>(value: T): Ok<T> {
+export function ok<T>(value: NonNullable<T>): Ok<T> {
   return new Ok(value);
 }
 
@@ -16,7 +17,7 @@ export function ok<T>(value: T): Ok<T> {
  * @param {E} error The error to wrap in Err.
  * @returns {Err<E>} An Err result containing the error.
  */
-export function err<E>(error: E): Err<E> {
+export function err<E>(error: NonNullable<E>): Err<E> {
   return new Err(error);
 }
 
@@ -42,7 +43,7 @@ class Ok<T> {
    *
    * @param {T} value - The success value.
    */
-  constructor(private readonly value: T) { }
+  constructor(private readonly value: NonNullable<T>) { }
 
   /**
    * Checks if the Result is Ok.
@@ -140,7 +141,7 @@ class Ok<T> {
    * @param {(value: T) => U} fn The function to apply to the contained value.
    * @returns {Result<U, never>} A new Result with the function applied to the contained value.
    */
-  map<U>(fn: (value: T) => U): Result<U, never> {
+  map<U>(fn: (value: T) => NonNullable<U>): Result<U, never> {
     return new Ok(fn(this.value));
   }
 
@@ -192,6 +193,31 @@ class Ok<T> {
   inspectErr(_fn: (error: never) => void): this {
     return this;
   }
+
+  /**
+   * Returns the Ok if it contains a value, otherwise returns an Err.
+   * @param {Result<U, F>} _other The alternative Result (ignored in Ok).
+   * @returns {Result<T, never>} This Ok instance.
+   */
+  or<U, F>(_other: Result<U, F>): Result<T, never> {
+    return this;
+  }
+
+  /**
+   * Converts an Ok<T> to a None
+   * @returns {T} The contained value.
+   */
+  err(): Option<T> {
+    return none();
+  }
+
+  /**
+   * Converts an Ok<T> to a Some<T>
+   * @returns {T} The contained value.
+   */
+  ok(): Option<T> {
+    return some(this.value);
+  }
 }
 
 /**
@@ -209,7 +235,7 @@ class Err<E> {
    *
    * @param {E} error - The error value.
    */
-  constructor(private readonly error: E) { }
+  constructor(private readonly error: NonNullable<E>) { }
 
   /**
    * Checks if the Result is Ok.
@@ -319,7 +345,7 @@ class Err<E> {
    * @param {(error: E) => F} fn The function to apply to the error.
    * @returns {Result<never, F>} A new Err Result with the function applied to the contained error.
    */
-  mapErr<F>(fn: (error: E) => F): Result<never, F> {
+  mapErr<F>(fn: (error: E) => NonNullable<F>): Result<never, F> {
     return new Err(fn(this.error));
   }
 
@@ -360,6 +386,31 @@ class Err<E> {
   inspectErr(fn: (error: E) => void): this {
     fn(this.error);
     return this;
+  }
+
+  /**
+   * Returns the Ok if it contains a value, otherwise returns an Err.
+   * @param {Result<U, F>} other The alternative Result.
+   * @returns {Result<U, F>} The other Result.
+   */
+  or<U, F>(other: Result<U, F>): Result<U, F> {
+    return other;
+  }
+
+  /**
+   * Converts an Err<E> to a Some<E>
+   * @returns {E} The contained value.
+   */
+  err(): Option<E> {
+    return some(this.error);
+  }
+
+  /**
+   * Converts an Err<E> to a None
+   * @returns {E} The contained value.
+   */
+  ok(): Option<E> {
+    return none();
   }
 }
 
