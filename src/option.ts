@@ -1,4 +1,5 @@
 import { TaggedError } from "./error";
+import { isNonNullable } from "./utils"
 import { Result } from "./result"
 
 // NOTE: we are doing this to keep api consistent with Result
@@ -28,7 +29,7 @@ export const Option = {
    * @returns {Option<T>} A Some with value, or a None if value is null.
    */
   fromNullable<T>(value: T): Option<T> {
-    return value ? Option.some(value) : Option.none();
+    return isNonNullable(value) ? Option.some(value as NonNullable<T>) : Option.none();
   },
 }
 
