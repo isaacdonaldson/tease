@@ -42,7 +42,7 @@ class Ok<T> {
    *
    * @param {T} value - The success value.
    */
-  constructor(private readonly value: T) {}
+  constructor(private readonly value: T) { }
 
   /**
    * Checks if the Result is Ok.
@@ -97,10 +97,10 @@ class Ok<T> {
 
   /**
    * Unwraps the Result, expecting Err and throwing if Ok.
-   * @throws {UnwrapError} Always throws for Ok.
+   * @throws {ResultUnwrapError} Always throws for Ok.
    */
   unwrapErr(): never {
-    throw new UnwrapError("Called `unwrapErr` on an `Ok` value");
+    throw new ResultUnwrapError("Called `unwrapErr` on an `Ok` value");
   }
 
   /**
@@ -209,7 +209,7 @@ class Err<E> {
    *
    * @param {E} error - The error value.
    */
-  constructor(private readonly error: E) {}
+  constructor(private readonly error: E) { }
 
   /**
    * Checks if the Result is Ok.
@@ -247,10 +247,10 @@ class Err<E> {
 
   /**
    * Unwraps the Result, expecting Ok and throwing if Err.
-   * @throws {UnwrapError} Always throws for Err.
+   * @throws {ResultUnwrapError} Always throws for Err.
    */
   unwrap(): never {
-    throw new UnwrapError("Called `unwrap` on an `Err` value");
+    throw new ResultUnwrapError("Called `unwrap` on an `Err` value");
   }
 
   /**
@@ -366,6 +366,7 @@ class Err<E> {
 /**
  * Error thrown when unwrapping a Result fails.
  */
-export class UnwrapError extends TaggedError {
-  readonly _tag = "UnwrapError" as const;
+export class ResultUnwrapError extends TaggedError {
+  readonly _tag = "ResultUnwrapError" as const;
 }
+

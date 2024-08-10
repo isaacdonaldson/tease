@@ -1,4 +1,4 @@
-import { ok, err, Result, UnwrapError } from './result';
+import { ok, err, Result } from './result';
 
 describe('Result', () => {
   describe('ok function', () => {
@@ -49,7 +49,9 @@ describe('Result', () => {
     });
 
     it('unwrapErr should throw UnwrapError', () => {
-      expect(() => okResult.unwrapErr()).toThrow(UnwrapError);
+      expect(() => okResult.unwrapErr()).toThrow(
+        "Called `unwrapErr` on an `Ok` value",
+      );
     });
 
     it('unwrapOrElse should return the value', () => {
@@ -121,7 +123,9 @@ describe('Result', () => {
     });
 
     it('unwrap should throw UnwrapError', () => {
-      expect(() => errResult.unwrap()).toThrow(UnwrapError);
+      expect(() => errResult.unwrap()).toThrow(
+        "Called `unwrap` on an `Err` value",
+      );
     });
 
     it('unwrapOr should return the default value', () => {
