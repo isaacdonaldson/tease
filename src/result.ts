@@ -1,5 +1,5 @@
 import { TaggedError } from "./error";
-import { isNonNullable } from "./utils"
+import { isNonNullable } from "./utils";
 import { Option } from "./option";
 
 // NOTE: exporting this object allows use to use try as a function
@@ -16,11 +16,11 @@ export const Result = {
   },
 
   /**
-  * Creates an Err result.
-  * @template E The type of the error.
-  * @param {NonNullable<E>} error The error to wrap in Err.
-  * @returns {Err<E>} An Err result containing the error.
-  */
+   * Creates an Err result.
+   * @template E The type of the error.
+   * @param {NonNullable<E>} error The error to wrap in Err.
+   * @returns {Err<E>} An Err result containing the error.
+   */
   err<E>(error: NonNullable<E>): Err<E> {
     return new Err(error);
   },
@@ -32,7 +32,9 @@ export const Result = {
    * @returns {Result<T, E>} An Ok with value, or an Err result containing an error string.
    */
   fromNullable<T>(value: T): Result<T, string> {
-    return isNonNullable(value) ? Result.ok(value as NonNullable<T>) : Result.err('The value provided was Nullable');
+    return isNonNullable(value)
+      ? Result.ok(value as NonNullable<T>)
+      : Result.err("The value provided was Nullable");
   },
 
   /**
@@ -43,11 +45,13 @@ export const Result = {
    */
   fromNullableWithError<T, E>(value: T, error: E): Result<T, E> {
     if (isNonNullable(value)) {
-      return Result.ok(value as NonNullable<T>)
+      return Result.ok(value as NonNullable<T>);
     } else if (isNonNullable(error)) {
-      return Result.err(error as NonNullable<E>)
+      return Result.err(error as NonNullable<E>);
     } else {
-      throw new ResultNonNullableError("Both provided values are Nullable and a Result cannot be created")
+      throw new ResultNonNullableError(
+        "Both provided values are Nullable and a Result cannot be created",
+      );
     }
   },
 
@@ -66,7 +70,11 @@ export const Result = {
       const res = fn();
       return Result.fromNullableWithError(res, new TryCatchError("", {}));
     } catch (e) {
-      return Result.err(new TryCatchError("An error was thrown during a Result.try call", { cause: e }))
+      return Result.err(
+        new TryCatchError("An error was thrown during a Result.try call", {
+          cause: e,
+        }),
+      );
     }
   },
 
@@ -85,10 +93,14 @@ export const Result = {
       const res = await fn();
       return Result.fromNullableWithError(res, new TryCatchError("", {}));
     } catch (e) {
-      return Result.err(new TryCatchError("An error was thrown during a Result.try call", { cause: e }))
+      return Result.err(
+        new TryCatchError("An error was thrown during a Result.try call", {
+          cause: e,
+        }),
+      );
     }
-  }
-}
+  },
+};
 
 /**
  * Represents a value that is either Ok or Err.
@@ -508,12 +520,12 @@ export class TryCatchError extends TaggedError {
   cause?: unknown;
 
   /**
-    * Creates a new TryCatchError instance.
-    *
-    * @param {string} message - The error message.
-    * @param {Object} [options] - Optional options.
-    * @param {unknown} [options.cause] - The cause of the error.
-    */
+   * Creates a new TryCatchError instance.
+   *
+   * @param {string} message - The error message.
+   * @param {Object} [options] - Optional options.
+   * @param {unknown} [options.cause] - The cause of the error.
+   */
   constructor(message: string, options?: { cause?: unknown }) {
     super(message);
     if (options?.cause) {

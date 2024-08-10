@@ -1,6 +1,6 @@
 import { TaggedError } from "./error";
-import { isNonNullable } from "./utils"
-import { Result } from "./result"
+import { isNonNullable } from "./utils";
+import { Result } from "./result";
 
 // NOTE: we are doing this to keep api consistent with Result
 export const Option = {
@@ -29,9 +29,12 @@ export const Option = {
    * @returns {Option<T>} A Some with value, or a None if value is null.
    */
   fromNullable<T>(value: T | null | undefined): Option<T> {
-    return isNonNullable(value) ? Option.some(value as NonNullable<T>) : Option.none();
+    // FIX: This is causing a test case to not compile and I am not sure why
+    return isNonNullable(value)
+      ? Option.some(value as NonNullable<T>)
+      : Option.none();
   },
-}
+};
 
 /**
  * Represents either a Some value or None.
@@ -188,7 +191,7 @@ class Some<T> {
    * @returns {Result<T, never>} The Result containing the defaultValue.
    */
   okOr(_defaultValue: NonNullable<T>): Result<T, never> {
-    return Result.ok(this.value)
+    return Result.ok(this.value);
   }
 }
 
@@ -339,7 +342,7 @@ class None {
    * @returns {Result<U, F>} The Result containing the defaultValue.
    */
   okOr<U, F>(defaultValue: NonNullable<F>): Result<U, F> {
-    return Result.err(defaultValue)
+    return Result.err(defaultValue);
   }
 }
 
