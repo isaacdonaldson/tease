@@ -1,22 +1,35 @@
 import { TaggedError } from "./error";
 import { Result } from "./result"
 
-/**
- * Creates a Some instance containing a non-null value.
- * @template T The type of the value.
- * @param {NonNullable<T>} value The non-null value to wrap.
- * @returns {Some<T>} A new Some instance.
- */
-export function some<T>(value: NonNullable<T>): Some<T> {
-  return new Some(value);
-}
+// NOTE: we are doing this to keep api consistent with Result
+export const Option = {
+  /**
+   * Creates a Some instance containing a non-null value.
+   * @template T The type of the value.
+   * @param {NonNullable<T>} value The non-null value to wrap.
+   * @returns {Some<T>} A new Some instance.
+   */
+  some<T>(value: NonNullable<T>): Some<T> {
+    return new Some(value);
+  },
 
-/**
- * Creates a None instance representing the absence of a value.
- * @returns {None} A new None instance.
- */
-export function none(): None {
-  return new None();
+  /**
+   * Creates a None instance representing the absence of a value.
+   * @returns {None} A new None instance.
+   */
+  none(): None {
+    return new None();
+  },
+
+  /**
+   * Creates an Option for the provided Nullable value, Some<T> if non null, None if null.
+   * @template T The type of the value.
+   * @param {T} value The value to put in the Option.
+   * @returns {Option<T>} A Some with value, or a None if value is null.
+   */
+  fromNullable<T>(value: T): Option<T> {
+    return value ? Option.some(value) : Option.none();
+  },
 }
 
 /**
@@ -115,7 +128,7 @@ class Some<T> {
    * @returns {Option<U>} A new Some containing the result of fn.
    */
   map<U>(fn: (value: T) => NonNullable<U>): Option<U> {
-    return some(fn(this.value));
+    return Option.some(fn(this.value));
   }
 
   /**
@@ -137,7 +150,7 @@ class Some<T> {
    * @returns {Option<T>} Some if the predicate is true, None otherwise.
    */
   filter(pred: (value: T) => boolean): Option<T> {
-    return pred(this.value) ? this : none();
+    return pred(this.value) ? this : Option.none();
   }
 
   /**
