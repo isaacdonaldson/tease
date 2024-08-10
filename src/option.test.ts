@@ -1,4 +1,4 @@
-import { some, none, Option } from "../src/option";
+import { Option } from "../src/option";
 import { Result } from "./result"
 
 describe("Option", () => {
@@ -6,7 +6,7 @@ describe("Option", () => {
     let someValue: Option<number>;
 
     beforeEach(() => {
-      someValue = some(5);
+      someValue = Option.some(5);
     });
 
     test("isSome returns true", () => {
@@ -38,12 +38,12 @@ describe("Option", () => {
     });
 
     test("and returns the other option", () => {
-      const other = some(10);
+      const other = Option.some(10);
       expect(someValue.and(other)).toBe(other);
     });
 
     test("andThen applies the function", () => {
-      const result = someValue.andThen((v) => some(v * 2));
+      const result = someValue.andThen((v) => Option.some(v * 2));
       expect(result.unwrap()).toBe(10);
     });
 
@@ -72,18 +72,18 @@ describe("Option", () => {
     });
 
     test("flatten returns the inner Some for Option type", () => {
-      const nestedOption = some(some(5));
-      expect(nestedOption.flatten()).toStrictEqual(some(5));
+      const nestedOption = Option.some(Option.some(5));
+      expect(nestedOption.flatten()).toStrictEqual(Option.some(5));
     });
 
     test("flatten returns the inner None for Option type", () => {
-      const nestedOption = some(none());
-      expect(nestedOption.flatten()).toStrictEqual(none());
+      const nestedOption = Option.some(Option.none());
+      expect(nestedOption.flatten()).toStrictEqual(Option.none());
     });
 
     test("flatten returns the None for None type", () => {
-      const nestedOption = none()
-      expect(nestedOption.flatten()).toStrictEqual(none());
+      const nestedOption = Option.none()
+      expect(nestedOption.flatten()).toStrictEqual(Option.none());
     });
 
     test("inspect calls the function with the value", () => {
@@ -94,7 +94,7 @@ describe("Option", () => {
     });
 
     test("or returns the original Some", () => {
-      const other = some(10);
+      const other = Option.some(10);
       expect(someValue.or(other)).toBe(someValue);
     });
 
@@ -104,10 +104,10 @@ describe("Option", () => {
   });
 
   describe("none", () => {
-    let noneValue = none();
+    let noneValue = Option.none();
 
     beforeEach(() => {
-      noneValue = none();
+      noneValue = Option.none();
     });
 
     test("isSome returns false", () => {
@@ -139,7 +139,7 @@ describe("Option", () => {
     });
 
     test("and returns None", () => {
-      const other = some(10);
+      const other = Option.some(10);
       expect(noneValue.and(other)).toBe(noneValue);
     });
 
@@ -181,7 +181,7 @@ describe("Option", () => {
     });
 
     test("or returns the other option", () => {
-      const other = some(10);
+      const other = Option.some(10);
       expect(noneValue.or(other)).toBe(other);
     });
 

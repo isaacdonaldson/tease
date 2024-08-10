@@ -1,7 +1,7 @@
 import { TaggedError } from "./error";
-import { some, none, Option } from "./option";
+import { Option } from "./option";
 
-// NOTE: export this object allows use to use try as a function
+// NOTE: exporting this object allows use to use try as a function
 // when it is a reserved keyword, can use like `Result.try`
 export const Result = {
   /**
@@ -276,7 +276,7 @@ class Ok<T> {
    * @returns {Option<T>} The Option containing the value.
    */
   err(): Option<T> {
-    return none();
+    return Option.none();
   }
 
   /**
@@ -284,7 +284,7 @@ class Ok<T> {
    * @returns {Option<T>} The Option containing the value.
    */
   ok(): Option<T> {
-    return some(this.value);
+    return Option.some(this.value);
   }
 }
 
@@ -470,7 +470,7 @@ class Err<E> {
    * @returns {Option<E>} The Option containing the error.
    */
   err(): Option<E> {
-    return some(this.error);
+    return Option.some(this.error);
   }
 
   /**
@@ -478,7 +478,7 @@ class Err<E> {
    * @returns {Option<E>} The Option containing the error.
    */
   ok(): Option<E> {
-    return none();
+    return Option.none();
   }
 }
 

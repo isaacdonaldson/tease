@@ -1,5 +1,5 @@
 import { Result } from './result';
-import { some, none } from './option';
+import { Option } from './option';
 
 describe('Result', () => {
   describe('ok function', () => {
@@ -126,12 +126,12 @@ describe('Result', () => {
 
     it('err should return None', () => {
       const result: Result<number, string> = Result.ok(42);
-      expect(result.err()).toStrictEqual(none());
+      expect(result.err()).toStrictEqual(Option.none());
     });
 
     it('ok should return Some', () => {
       const result: Result<number, string> = Result.ok(42);
-      expect(result.ok()).toStrictEqual(some(42));
+      expect(result.ok()).toStrictEqual(Option.some(42));
     });
   });
 
@@ -233,12 +233,12 @@ describe('Result', () => {
 
     it('err should return Some', () => {
       const result: Result<number, string> = Result.err('error');
-      expect(result.err()).toStrictEqual(some('error'));
+      expect(result.err()).toStrictEqual(Option.some('error'));
     });
 
     it('ok should return None', () => {
       const result: Result<number, string> = Result.err('error');
-      expect(result.ok()).toStrictEqual(none());
+      expect(result.ok()).toStrictEqual(Option.none());
     });
   });
 });
