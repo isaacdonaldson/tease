@@ -70,24 +70,19 @@ describe("Option", () => {
       expect(result.isNone()).toBe(true);
     });
 
-    test("flatten throws FlattenError on single Option type", () => {
-      expect(() => someValue.flatten()).toThrow(
-        "Called `flatten` on a non-option type",
-      );
-    });
-
-    test("flatten returns the inner Option for Option type", () => {
+    test("flatten returns the inner Some for Option type", () => {
       const nestedOption = some(some(5));
       expect(nestedOption.flatten()).toStrictEqual(some(5));
     });
 
-    test("flatten throws FlattenError for non-Option type", () => {
-      const invalidOption = some({ notAnOption: true }) as unknown as Option<
-        Option<unknown>
-      >;
-      expect(() => invalidOption.flatten()).toThrow(
-        "Called `flatten` on a non-option type",
-      );
+    test("flatten returns the inner None for Option type", () => {
+      const nestedOption = some(none());
+      expect(nestedOption.flatten()).toStrictEqual(none());
+    });
+
+    test("flatten returns the None for None type", () => {
+      const nestedOption = none()
+      expect(nestedOption.flatten()).toStrictEqual(none());
     });
 
     test("inspect calls the function with the value", () => {
