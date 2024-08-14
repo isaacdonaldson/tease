@@ -8,20 +8,20 @@ export const Result = {
   /**
    * Creates an Ok result.
    * @template T The type of the value.
-   * @param {NonNullable<T>} value The value to wrap in Ok.
+   * @param {T} value The value to wrap in Ok.
    * @returns {Ok<T>} An Ok result containing the value.
    */
-  ok<T>(value: NonNullable<T>): Ok<T> {
+  ok<T>(value: T): Ok<T> {
     return new Ok(value);
   },
 
   /**
    * Creates an Err result.
    * @template E The type of the error.
-   * @param {NonNullable<E>} error The error to wrap in Err.
+   * @param {E} error The error to wrap in Err.
    * @returns {Err<E>} An Err result containing the error.
    */
-  err<E>(error: NonNullable<E>): Err<E> {
+  err<E>(error: E): Err<E> {
     return new Err(error);
   },
 
@@ -122,9 +122,9 @@ class Ok<T> {
   /**
    * Creates an instance of Ok.
    *
-   * @param {NonNullable<T>} value - The success value.
+   * @param {T} value - The success value.
    */
-  constructor(private readonly value: NonNullable<T>) { }
+  constructor(private readonly value: T) { }
 
   /**
    * Checks if the Result is Ok.
@@ -219,10 +219,10 @@ class Ok<T> {
   /**
    * Maps a Result<T, E> to Result<U, E> by applying a function to the contained Ok value.
    * @template U The type of the new Ok value.
-   * @param {(value: T) => NonNullable<U>} fn The function to apply to the contained value.
+   * @param {(value: T) => U} fn The function to apply to the contained value.
    * @returns {Result<U, never>} A new Result with the function applied to the contained value.
    */
-  map<U>(fn: (value: T) => NonNullable<U>): Result<U, never> {
+  map<U>(fn: (value: T) => U): Result<U, never> {
     return new Ok(fn(this.value));
   }
 
@@ -297,7 +297,7 @@ class Ok<T> {
    * @returns {Option<T>} The Option containing the value.
    */
   ok(): Option<T> {
-    return Option.some(this.value);
+    return Option.fromNullable(this.value);
   }
 }
 
@@ -314,9 +314,9 @@ class Err<E> {
   /**
    * Creates an instance of Err.
    *
-   * @param {NonNullable<E>} error - The error value.
+   * @param {E} error - The error value.
    */
-  constructor(private readonly error: NonNullable<E>) { }
+  constructor(private readonly error: E) { }
 
   /**
    * Checks if the Result is Ok.
@@ -423,10 +423,10 @@ class Err<E> {
   /**
    * Maps a Result<T, E> to Result<T, F> by applying a function to the contained Err value.
    * @template F The type of the new Err value.
-   * @param {(error: E) => NonNullable<F>} fn The function to apply to the error.
+   * @param {(error: E) => F} fn The function to apply to the error.
    * @returns {Result<never, F>} A new Err Result with the function applied to the contained error.
    */
-  mapErr<F>(fn: (error: E) => NonNullable<F>): Result<never, F> {
+  mapErr<F>(fn: (error: E) => F): Result<never, F> {
     return new Err(fn(this.error));
   }
 
@@ -483,7 +483,7 @@ class Err<E> {
    * @returns {Option<E>} The Option containing the error.
    */
   err(): Option<E> {
-    return Option.some(this.error);
+    return Option.fromNullable(this.error);
   }
 
   /**
