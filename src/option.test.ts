@@ -203,9 +203,9 @@ describe("Option", () => {
       expect(noneValue.okOr(42)).toStrictEqual(Result.err(42));
     });
 
-    // it('fromNullable should return None for null or undefined', () => {
-    //   const nullVal = Option.fromNullable(null)
-    //   expect(nullVal.unwrapOr(5)).toBe(5);
-    // });
+    it('fromNullable should return None for null or undefined', () => {
+      expect((Option.fromNullable(null)).unwrapOr(5)).toBe(5);
+      expect((Option.fromNullable(undefined)).unwrapOr(5)).toBe(5);
+    });
   });
 });

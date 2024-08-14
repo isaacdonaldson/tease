@@ -89,10 +89,10 @@ class Some<T> {
 
   /**
    * Returns the contained value or a default.
-   * @param {T} _defaultValue The default value (unused in Some).
+   * @param {U} _defaultValue The default value (unused in Some).
    * @returns {T} The contained value.
    */
-  unwrapOr(_defaultValue: T): T {
+  unwrapOr<U>(_defaultValue: U): T {
     return this.value;
   }
 
