@@ -1,4 +1,4 @@
-import { Result, TryCatchError } from "./result";
+import { Result } from "./result";
 import { Option } from "./option";
 
 describe("Result", () => {
@@ -352,53 +352,50 @@ describe("Result", () => {
       );
     });
 
-    it("try should return Err with TryCatchError for thrown errors", () => {
+    it("try should return Err as Error for thrown errors", () => {
       const result = Result.try(() => {
         throw new Error("Test error");
       });
       expect(result.isErr()).toBe(true);
       const error = result.unwrapErr();
-      expect(error).toBeInstanceOf(TryCatchError);
+      expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe(
         "An error was thrown during a Result.try call",
       );
-      expect(error.cause).toBeInstanceOf(Error);
-      expect(error.getMessage()).toBe("Test error");
     });
 
-    it("try should return Err with TryCatchError for null or undefined results", () => {
+    it("try should return Err as Error for null or undefined results", () => {
       const nullResult = Result.try(() => null);
       expect(nullResult.isErr()).toBe(true);
-      expect(nullResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+      expect(nullResult.unwrapErr()).toBeInstanceOf(Error);
 
       const undefinedResult = Result.try(() => undefined);
       expect(undefinedResult.isErr()).toBe(true);
-      expect(undefinedResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+      expect(undefinedResult.unwrapErr()).toBeInstanceOf(Error);
     });
 
-    it("asyncTry should return Err with TryCatchError for thrown errors in async functions", async () => {
+    it("asyncTry should return Err as Error for thrown errors in async functions", async () => {
       const result = await Result.asyncTry(async () => {
         await new Promise((resolve) => setTimeout(resolve, 10));
         throw new Error("Async test error");
       });
       expect(result.isErr()).toBe(true);
       const error = result.unwrapErr();
-      expect(error).toBeInstanceOf(TryCatchError);
+      expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe(
         "An error was thrown during a Result.try call",
       );
-      expect(error.cause).toBeInstanceOf(Error);
-      expect(error.getMessage()).toBe("Async test error");
+      expect(error).toBeInstanceOf(Error);
     });
 
-    it("asyncTry should return Err with TryCatchError for null or undefined results in async functions", async () => {
+    it("asyncTry should return Err as Error for null or undefined results in async functions", async () => {
       const nullResult = await Result.asyncTry(async () => null);
       expect(nullResult.isErr()).toBe(true);
-      expect(nullResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+      expect(nullResult.unwrapErr()).toBeInstanceOf(Error);
 
       const undefinedResult = await Result.asyncTry(async () => undefined);
       expect(undefinedResult.isErr()).toBe(true);
-      expect(undefinedResult.unwrapErr()).toBeInstanceOf(TryCatchError);
+      expect(undefinedResult.unwrapErr()).toBeInstanceOf(Error);
     });
   });
 });

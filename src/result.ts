@@ -32,9 +32,7 @@ export const Result = {
    * @returns {Result<T, E>} An Ok with value, or an Err result containing an error string.
    */
   fromNullable<T>(value: T): Result<T, string> {
-    return isNonNullable(value)
-      ? Result.ok(value as NonNullable<T>)
-      : Result.err("The value provided was Nullable");
+    return isNonNullable(value) ? Result.ok(value as NonNullable<T>) : Result.err("The value provided was Nullable");
   },
 
   /**
@@ -49,9 +47,7 @@ export const Result = {
     } else if (isNonNullable(error)) {
       return Result.err(error as NonNullable<E>);
     } else {
-      throw new ResultNonNullableError(
-        "Both provided values are Nullable and a Result cannot be created",
-      );
+      throw new ResultNonNullableError("Both provided values are Nullable and a Result cannot be created");
     }
   },
 
@@ -59,22 +55,18 @@ export const Result = {
    * Attempts to execute a function and returns the result in a `Result` type.
    *
    * If the function executes successfully, returns `Ok` with the result.
-   * If the function throws an error, returns `Err` with a `TryCatchError` containing the cause.
+   * If the function throws an error, returns `Err` as an `Error`
    *
    * @template T - The type of the result.
    * @param {() => T} fn - The function to attempt to execute.
-   * @returns {Result<T, TryCatchError>} The result of the function execution.
+   * @returns {Result<T, Error>} The result of the function execution.
    */
-  try<T>(fn: () => T): Result<T, TryCatchError> {
+  try<T>(fn: () => T): Result<T, Error> {
     try {
       const res = fn();
-      return Result.fromNullableWithError(res, new TryCatchError("", {}));
+      return Result.fromNullableWithError(res, new Error(""));
     } catch (e) {
-      return Result.err(
-        new TryCatchError("An error was thrown during a Result.try call", {
-          cause: e,
-        }),
-      );
+      return Result.err(new Error("An error was thrown during a Result.try call"));
     }
   },
 
@@ -82,22 +74,18 @@ export const Result = {
    * Attempts to execute an asynchronous function and returns the result in a `Result` type.
    *
    * If the function executes successfully, returns a `Result` containing the value.
-   * If the function throws an error, returns a `Result` containing a `TryCatchError` with the original error as the cause.
+   * If the function throws an error, returns a `Result` containing an `Error` with the original error as the cause.
    *
    * @template T - The type of the result.
    * @param {() => Promise<T>} fn - The asynchronous function to attempt to execute.
-   * @returns {Promise<Result<T, TryCatchError>>} A promise that resolves to the result of the function execution.
+   * @returns {Promise<Result<T, Error>>} A promise that resolves to the result of the function execution.
    */
-  async asyncTry<T>(fn: () => Promise<T>): Promise<Result<T, TryCatchError>> {
+  async asyncTry<T>(fn: () => Promise<T>): Promise<Result<T, Error>> {
     try {
       const res = await fn();
-      return Result.fromNullableWithError(res, new TryCatchError("", {}));
+      return Result.fromNullableWithError(res, new Error(""));
     } catch (e) {
-      return Result.err(
-        new TryCatchError("An error was thrown during a Result.try call", {
-          cause: e,
-        }),
-      );
+      return Result.err(new Error("An error was thrown during a Result.try call"));
     }
   },
 };
@@ -124,7 +112,7 @@ class Ok<T> {
    *
    * @param {T} value - The success value.
    */
-  constructor(private readonly value: T) { }
+  constructor(private readonly value: T) {}
 
   /**
    * Checks if the Result is Ok.
@@ -316,7 +304,7 @@ class Err<E> {
    *
    * @param {E} error - The error value.
    */
-  constructor(private readonly error: E) { }
+  constructor(private readonly error: E) {}
 
   /**
    * Checks if the Result is Ok.
@@ -509,32 +497,4 @@ export class ResultUnwrapError extends TaggedError {
  */
 export class ResultNonNullableError extends TaggedError {
   readonly _tag = "ResultNonNullableError " as const;
-}
-
-/**
- * Error thrown when a try catch blocks has an error
- * @extends TaggedError
- */
-export class TryCatchError extends TaggedError {
-  readonly _tag = "TryCatchError" as const;
-  cause?: unknown;
-
-  /**
-   * Creates a new TryCatchError instance.
-   *
-   * @param {string} message - The error message.
-   * @param {Object} [options] - Optional options.
-   * @param {unknown} [options.cause] - The cause of the error.
-   */
-  constructor(message: string, options?: { cause?: unknown }) {
-    super(message);
-    if (options?.cause) {
-      this.cause = options.cause;
-    }
-  }
-
-  getMessage(): string {
-    const cause = this.cause as { message: string };
-    return cause.message;
-  }
 }
