@@ -13,17 +13,24 @@ Considerations:
 - Better intergration with the other parts of this library
 */
 
+
+export const Iterator = {
+  from<T>(source: Iterable<T>): LazyIterator<T> {
+    return new LazyIterator(source);
+  }
+}
+
 /**
- * Represents a lazy iterator over a sequence of values.
- * @template T The type of elements in the iterator.
+ * Represents a lazy LazyIterator over a sequence of values.
+ * @template T The type of elements in the LazyIterator.
  */
-export class Iterator<T> implements Iterable<T> {
+export class LazyIterator<T> implements Iterable<T> {
   private source: Iterable<T>;
   private transformations: ((value: T) => T)[] = [];
   private filters: ((value: T) => boolean)[] = [];
 
   /**
-   * Creates a new Iterator instance.
+   * Creates a new LazyIterator instance.
    * @param source The source iterable to iterate over.
    */
   constructor(source: Iterable<T>) {
@@ -31,8 +38,8 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Returns the iterator itself, making it compatible with for...of loops.
-   * @returns An iterable iterator of the values.
+   * Returns the LazyIterator itself, making it compatible with for...of loops.
+   * @returns An iterable LazyIterator of the values.
    */
   [Symbol.iterator](): IterableIterator<T> {
     return this.values();
@@ -52,30 +59,30 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Applies a transformation function to each element in the iterator.
+   * Applies a transformation function to each element in the LazyIterator.
    * @template U The type of the transformed elements.
    * @param fn The transformation function to apply.
-   * @returns A new Iterator with the transformed elements.
+   * @returns A new LazyIterator with the transformed elements.
    */
-  map<U>(fn: (value: T) => U): Iterator<U> {
-    const mappedIterator = new Iterator<U>(this as any);
-    mappedIterator.transformations = [...this.transformations, fn as any];
-    return mappedIterator;
+  map<U>(fn: (value: T) => U): LazyIterator<U> {
+    const mappedLazyIterator = new LazyIterator<U>(this as any);
+    mappedLazyIterator.transformations = [...this.transformations, fn as any];
+    return mappedLazyIterator;
   }
 
   /**
-   * Filters elements in the iterator based on a predicate function.
+   * Filters elements in the LazyIterator based on a predicate function.
    * @param predicate The function to test each element.
-   * @returns A new Iterator with elements that pass the predicate.
+   * @returns A new LazyIterator with elements that pass the predicate.
    */
-  filter(predicate: (value: T) => boolean): Iterator<T> {
-    const filteredIterator = new Iterator<T>(this);
-    filteredIterator.filters = [...this.filters, predicate];
-    return filteredIterator;
+  filter(predicate: (value: T) => boolean): LazyIterator<T> {
+    const filteredLazyIterator = new LazyIterator<T>(this);
+    filteredLazyIterator.filters = [...this.filters, predicate];
+    return filteredLazyIterator;
   }
 
   /**
-   * Reduces the iterator to a single value using an accumulator function.
+   * Reduces the LazyIterator to a single value using an accumulator function.
    * @template U The type of the accumulated result.
    * @param fn The accumulator function.
    * @param initialValue The initial value of the accumulator.
@@ -90,7 +97,7 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Collects all elements of the iterator into an array.
+   * Collects all elements of the LazyIterator into an array.
    * @returns A Result containing the array of elements or an error.
    */
   collect(): Result<T[], Error> {
@@ -98,7 +105,7 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Finds the first element in the iterator that satisfies a predicate.
+   * Finds the first element in the LazyIterator that satisfies a predicate.
    * @param predicate The function to test each element.
    * @returns An Option containing the found element or None.
    */
@@ -128,11 +135,11 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Creates a new Iterator with elements in reverse order.
-   * @returns A new Iterator with reversed elements.
+   * Creates a new LazyIterator with elements in reverse order.
+   * @returns A new LazyIterator with reversed elements.
    */
-  reverse(): Iterator<T> {
-    return new Iterator<T>({
+  reverse(): LazyIterator<T> {
+    return new LazyIterator<T>({
       [Symbol.iterator]: () => {
         const values = this.collect().unwrap();
 
@@ -146,7 +153,7 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Returns the last element in the iterator.
+   * Returns the last element in the LazyIterator.
    * @returns An Option containing the last element or None if empty.
    */
   last(): Option<T> {
@@ -158,37 +165,37 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Creates a new Iterator that skips the first n elements.
+   * Creates a new LazyIterator that skips the first n elements.
    * @param n The number of elements to skip.
-   * @returns A new Iterator starting after the skipped elements.
+   * @returns A new LazyIterator starting after the skipped elements.
    * @throws {IterNegativeNumberError} If n is negative.
    */
-  skip(n: number): Iterator<T> {
+  skip(n: number): LazyIterator<T> {
     if (n < 0) {
       throw new IterNegativeNumberError("Cannot skip a negative number of elements");
     }
-    return new Iterator<T>({
+    return new LazyIterator<T>({
       [Symbol.iterator]: () => {
-        const sourceIterator = this[Symbol.iterator]();
+        const sourceLazyIterator = this[Symbol.iterator]();
         let count = 0;
-        // TODO: Does this make sense to do the skip in the returned iterator?
+        // TODO: Does this make sense to do the skip in the returned LazyIterator?
         return (function* () {
           while (count < n) {
-            const _v = sourceIterator.next();
+            const _v = sourceLazyIterator.next();
             if (_v.done) {
               return;
             }
             count++;
           }
 
-          yield* sourceIterator;
+          yield* sourceLazyIterator;
         })();
       },
     });
   }
 
   /**
-   * Tests if any element in the iterator satisfies a predicate.
+   * Tests if any element in the LazyIterator satisfies a predicate.
    * @param predicate The function to test each element.
    * @returns True if any element satisfies the predicate, false otherwise.
    */
@@ -202,7 +209,7 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Tests if all elements in the iterator satisfy a predicate.
+   * Tests if all elements in the LazyIterator satisfy a predicate.
    * @param predicate The function to test each element.
    * @returns True if all elements satisfy the predicate, false otherwise.
    */
@@ -216,25 +223,25 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Creates a new Iterator with at most n elements from the start.
+   * Creates a new LazyIterator with at most n elements from the start.
    * @param n The maximum number of elements to take.
-   * @returns A new Iterator with at most n elements.
+   * @returns A new LazyIterator with at most n elements.
    * @throws {IterNegativeNumberError} If n is negative.
    */
-  take(n: number): Iterator<T> {
+  take(n: number): LazyIterator<T> {
     if (n < 0) {
       throw new IterNegativeNumberError("Cannot take a negative number of elements");
     }
 
-    return new Iterator<T>({
+    return new LazyIterator<T>({
       [Symbol.iterator]: () => {
-        const iterator = this[Symbol.iterator]();
+        const LazyIterator = this[Symbol.iterator]();
         let count = 0;
         return {
           next: () => {
             if (count < n) {
               count++;
-              return iterator.next();
+              return LazyIterator.next();
             }
             return { done: true, value: undefined };
           },
@@ -247,14 +254,14 @@ export class Iterator<T> implements Iterable<T> {
    * Maps elements to a new type and filters out None results.
    * @template U The type of the mapped elements.
    * @param fn The mapping function that returns an Option.
-   * @returns A new Iterator with mapped and filtered elements.
+   * @returns A new LazyIterator with mapped and filtered elements.
    */
-  filterMap<U>(fn: (value: T) => Option<U>): Iterator<U> {
-    return new Iterator<U>({
+  filterMap<U>(fn: (value: T) => Option<U>): LazyIterator<U> {
+    return new LazyIterator<U>({
       [Symbol.iterator]: () => {
-        const sourceIterator = this[Symbol.iterator]();
+        const sourceLazyIterator = this[Symbol.iterator]();
         return (function* () {
-          for (const values of sourceIterator) {
+          for (const values of sourceLazyIterator) {
             const result = fn(values);
             if (result.isSome()) {
               yield result.unwrap();
@@ -266,17 +273,35 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Applies a side-effect function to each element without modifying the iterator.
+   * Applies a side-effect function to each element without modifying the LazyIterator.
    * @param fn The side-effect function to apply.
-   * @returns A new Iterator with the same elements.
+   * @returns A new LazyIterator with the same elements.
    */
-  tap(fn: (value: T) => void): Iterator<T> {
-    return new Iterator<T>({
+  tap(fn: (value: T) => void): LazyIterator<T> {
+    return new LazyIterator<T>({
       [Symbol.iterator]: () => {
-        const sourceIterator = this[Symbol.iterator]();
+        const sourceLazyIterator = this[Symbol.iterator]();
         return (function* () {
-          for (const values of sourceIterator) {
+          for (const values of sourceLazyIterator) {
             fn(values);
+            yield values;
+          }
+        })();
+      },
+    });
+  }
+
+  /**
+   * Prints out each element of the LazyIterator and then returns it.
+   * @returns A new LazyIterator with the same elements.
+   */
+  debug(): LazyIterator<T> {
+    return new LazyIterator<T>({
+      [Symbol.iterator]: () => {
+        const sourceLazyIterator = this[Symbol.iterator]();
+        return (function* () {
+          for (const values of sourceLazyIterator) {
+            console.log(values);
             yield values;
           }
         })();
@@ -287,21 +312,21 @@ export class Iterator<T> implements Iterable<T> {
   /**
    * Groups elements into chunks of a specified size.
    * @param n The size of each chunk.
-   * @returns A new Iterator of arrays, each containing n elements.
+   * @returns A new LazyIterator of arrays, each containing n elements.
    * @throws {IterNegativeNumberError} If n is less than or equal to 0.
    */
-  chunk(n: number): Iterator<T[]> {
+  chunk(n: number): LazyIterator<T[]> {
     if (n <= 0) {
       throw new IterNegativeNumberError("Chunk size must be greater than 0");
     }
 
-    return new Iterator<T[]>({
+    return new LazyIterator<T[]>({
       [Symbol.iterator]: () => {
-        const sourceIterator = this[Symbol.iterator]();
+        const sourceLazyIterator = this[Symbol.iterator]();
         let count = 0;
         let chunk: T[] = [];
         return (function* () {
-          for (let value of sourceIterator) {
+          for (let value of sourceLazyIterator) {
             if (chunk.length === n) {
               yield chunk;
               chunk = [];
@@ -319,7 +344,7 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Counts the number of elements in the iterator.
+   * Counts the number of elements in the LazyIterator.
    * @returns The total count of elements.
    */
   count(): number {
@@ -327,20 +352,20 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Combines two iterators into a single iterator of pairs.
-   * @template U The type of elements in the other iterator.
-   * @param other The other iterator to zip with.
-   * @returns A new Iterator of pairs [T, U].
+   * Combines two LazyIterators into a single LazyIterator of pairs.
+   * @template U The type of elements in the other LazyIterator.
+   * @param other The other LazyIterator to zip with.
+   * @returns A new LazyIterator of pairs [T, U].
    */
-  zip<U>(other: Iterable<U>): Iterator<[T, U]> {
-    return new Iterator<[T, U]>({
+  zip<U>(other: Iterable<U>): LazyIterator<[T, U]> {
+    return new LazyIterator<[T, U]>({
       [Symbol.iterator]: () => {
-        const sourceIterator = this[Symbol.iterator]();
-        const otherIterator = other[Symbol.iterator]();
+        const sourceLazyIterator = this[Symbol.iterator]();
+        const otherLazyIterator = other[Symbol.iterator]();
 
         return (function* () {
-          for (const values of sourceIterator) {
-            const otherValue = otherIterator.next();
+          for (const values of sourceLazyIterator) {
+            const otherValue = otherLazyIterator.next();
             if (otherValue.done) break;
             yield [values, otherValue.value];
           }
@@ -350,28 +375,28 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Separates an iterator of pairs into two separate iterators.
+   * Separates an LazyIterator of pairs into two separate LazyIterators.
    * @template T The type of the first element in each pair.
    * @template U The type of the second element in each pair.
-   * @returns A tuple of two Iterators, one for first elements and one for second elements.
+   * @returns A tuple of two LazyIterators, one for first elements and one for second elements.
    */
-  unzip<T, U>(this: Iterator<[T, U]>): [Iterator<T>, Iterator<U>] {
+  unzip<T, U>(this: LazyIterator<[T, U]>): [LazyIterator<T>, LazyIterator<U>] {
     return [
-      new Iterator<T>({
+      new LazyIterator<T>({
         [Symbol.iterator]: () => {
-          const sourceIterator = this[Symbol.iterator]();
+          const sourceLazyIterator = this[Symbol.iterator]();
           return (function* () {
-            for (const [first] of sourceIterator) {
+            for (const [first] of sourceLazyIterator) {
               yield first;
             }
           })();
         },
       }),
-      new Iterator<U>({
+      new LazyIterator<U>({
         [Symbol.iterator]: () => {
-          const sourceIterator = this[Symbol.iterator]();
+          const sourceLazyIterator = this[Symbol.iterator]();
           return (function* () {
-            for (const [, second] of sourceIterator) {
+            for (const [, second] of sourceLazyIterator) {
               yield second;
             }
           })();
@@ -381,7 +406,7 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Returns the nth element in the iterator.
+   * Returns the nth element in the LazyIterator.
    * @param n The index of the element to return (0-based).
    * @returns An Option containing the nth element or None if out of bounds.
    * @throws {IterNegativeNumberError} If n is negative.
@@ -408,9 +433,9 @@ export class Iterator<T> implements Iterable<T> {
    */
   groupBy<U>(keyFn: (value: T) => U): Map<U, T[]> {
     const groups = new Map<U, T[]>();
-    const sourceIterator = this[Symbol.iterator]();
+    const sourceLazyIterator = this[Symbol.iterator]();
 
-    for (const values of sourceIterator) {
+    for (const values of sourceLazyIterator) {
       const key = keyFn(values);
       if (!groups.has(key)) {
         groups.set(key, []);
@@ -422,12 +447,12 @@ export class Iterator<T> implements Iterable<T> {
   }
 
   /**
-   * Sorts the elements of the iterator based on a key function.
+   * Sorts the elements of the LazyIterator based on a key function.
    * @template U The type of the sorting key.
    * @param keyFn The function to generate the sorting key for each element.
-   * @returns A new Iterator with sorted elements.
+   * @returns A new LazyIterator with sorted elements.
    */
-  sortBy<U>(keyFn: (value: T) => U): Iterator<T> {
+  sortBy<U>(keyFn: (value: T) => U): LazyIterator<T> {
     const sourceArray = this.collect().unwrap();
     sourceArray.sort((a, b) => {
       const keyA = keyFn(a);
@@ -436,7 +461,7 @@ export class Iterator<T> implements Iterable<T> {
       if (keyA > keyB) return 1;
       return 0;
     });
-    return new Iterator(sourceArray);
+    return new LazyIterator(sourceArray);
   }
 }
 
@@ -448,7 +473,7 @@ export class IterNegativeNumberError extends TaggedError {
 }
 
 /**
- * Error thrown when collecting an iterator
+ * Error thrown when collecting an LazyIterator
  */
 export class IterCollectError extends TaggedError {
   readonly _tag = "IterCollectError" as const;
