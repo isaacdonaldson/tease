@@ -360,7 +360,7 @@ describe("Result", () => {
       const error = result.unwrapErr();
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe(
-        "An error was thrown during a Result.try call",
+        "Test error",
       );
     });
 
@@ -383,7 +383,7 @@ describe("Result", () => {
       const error = result.unwrapErr();
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe(
-        "An error was thrown during a Result.try call",
+        "Async test error",
       );
       expect(error).toBeInstanceOf(Error);
     });

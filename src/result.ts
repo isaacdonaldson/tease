@@ -63,10 +63,10 @@ export const Result = {
    */
   try<T>(fn: () => T): Result<T, Error> {
     try {
-      const res = fn();
-      return Result.fromNullableWithError(res, new Error(""));
+      return Result.fromNullableWithError(fn(), new Error(""));
     } catch (e) {
-      return Result.err(new Error("An error was thrown during a Result.try call"));
+      const msg = e instanceof Error ? e.message : "An error was thrown during a Result.try call";
+      return Result.err(new Error(msg));
     }
   },
 
@@ -82,10 +82,10 @@ export const Result = {
    */
   async asyncTry<T>(fn: () => Promise<T>): Promise<Result<T, Error>> {
     try {
-      const res = await fn();
-      return Result.fromNullableWithError(res, new Error(""));
+      return Result.fromNullableWithError(await fn(), new Error(""));
     } catch (e) {
-      return Result.err(new Error("An error was thrown during a Result.try call"));
+      const msg = e instanceof Error ? e.message : "An error was thrown during a Result.try call";
+      return Result.err(new Error(msg));
     }
   },
 };
