@@ -116,14 +116,22 @@ describe('withDefer', () => {
       code: number;
     }
 
-    const result = withDefer<number, CustomError>((_defer, errdefer) => {
+    let testNumber = 0
+
+    const result = withDefer<number, CustomError>((defer, errdefer) => {
+      // Defer is run no matter what
+      defer(() => {
+        testNumber = 42
+      })
+
       errdefer((err) => {
         // TypeScript should recognize 'err' as CustomError
-        console.log(err.code);
+        testNumber = err.code
       });
       throw { message: 'Custom error', code: 500 };
     });
 
     expect(result).toEqual(Result.err({ message: 'Custom error', code: 500 }));
+    expect(testNumber).toEqual(42);
   });
 });
