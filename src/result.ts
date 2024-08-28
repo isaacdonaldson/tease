@@ -26,6 +26,17 @@ export const Result = {
   },
 
   /**
+   * Checks if a value is an instance of Result.
+   * @template T The type of the Ok value.
+   * @template E The type of the Err value.
+   * @param {unknown} value The value to check.
+   * @returns {boolean} True if the value is a Result, false otherwise.
+   */
+  isResult<T, E>(value: unknown): value is Result<T, E> {
+    return value instanceof Ok || value instanceof Err;
+  },
+
+  /**
    * Creates a Result for the provided Nullable value.
    * @template T The type of the value.
    * @param {T} value The value to put in the Result.

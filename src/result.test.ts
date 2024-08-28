@@ -50,9 +50,7 @@ describe("Result", () => {
     });
 
     it("unwrapErr should throw UnwrapError", () => {
-      expect(() => okResult.unwrapErr()).toThrow(
-        "Called `unwrapErr` on an `Ok` value",
-      );
+      expect(() => okResult.unwrapErr()).toThrow("Called `unwrapErr` on an `Ok` value");
     });
 
     it("unwrapOrElse should return the value", () => {
@@ -65,9 +63,7 @@ describe("Result", () => {
     });
 
     it("andThen should apply the function", () => {
-      expect(okResult.andThen((value) => Result.ok(value * 2))).toEqual(
-        Result.ok(84),
-      );
+      expect(okResult.andThen((value) => Result.ok(value * 2))).toEqual(Result.ok(84));
     });
 
     it("map should apply the function", () => {
@@ -157,12 +153,8 @@ describe("Result", () => {
 
     it("fromNullableWithError should return Ok for non-null values", () => {
       expect(Result.fromNullableWithError(42, "error").unwrap()).toBe(42);
-      expect(Result.fromNullableWithError("hello", "error").unwrap()).toBe(
-        "hello",
-      );
-      expect(
-        Result.fromNullableWithError({ key: "value" }, "error").unwrap(),
-      ).toEqual({ key: "value" });
+      expect(Result.fromNullableWithError("hello", "error").unwrap()).toBe("hello");
+      expect(Result.fromNullableWithError({ key: "value" }, "error").unwrap()).toEqual({ key: "value" });
     });
 
     it("fromNullableWithError should return Ok for falsy non-null values", () => {
@@ -203,6 +195,14 @@ describe("Result", () => {
       expect(result.isOk()).toBe(true);
       expect(result).toStrictEqual(Result.ok(42));
     });
+
+    it("isResult should return true for Ok instances", () => {
+      expect(Result.isResult(Result.ok(42))).toBe(true);
+    });
+
+    it("isResult should return true for Err instances", () => {
+      expect(Result.isResult(Result.err("error"))).toBe(true);
+    });
   });
 
   describe("Err", () => {
@@ -229,9 +229,7 @@ describe("Result", () => {
     });
 
     it("unwrap should throw UnwrapError", () => {
-      expect(() => errResult.unwrap()).toThrow(
-        "Called `unwrap` on an `Err` value",
-      );
+      expect(() => errResult.unwrap()).toThrow("Called `unwrap` on an `Err` value");
     });
 
     it("unwrapOr should return the default value", () => {
@@ -260,9 +258,7 @@ describe("Result", () => {
     });
 
     it("mapErr should apply the function", () => {
-      expect(errResult.mapErr((error) => error.toUpperCase())).toEqual(
-        Result.err("ERROR"),
-      );
+      expect(errResult.mapErr((error) => error.toUpperCase())).toEqual(Result.err("ERROR"));
     });
 
     it("mapOrElse should apply the err function", () => {
@@ -300,10 +296,7 @@ describe("Result", () => {
 
     it("or should maintain the correct type when chaining", () => {
       const result: Result<number, string> = Result.err("first error");
-      const chain = result
-        .or(Result.err("second error"))
-        .or(Result.ok(42))
-        .or(Result.ok(24));
+      const chain = result.or(Result.err("second error")).or(Result.ok(42)).or(Result.ok(24));
 
       expect(chain.unwrap()).toBe(42);
     });
@@ -319,21 +312,13 @@ describe("Result", () => {
     });
 
     it("fromNullable should return Err for null or undefined", () => {
-      expect(Result.fromNullable(null).unwrapErr()).toBe(
-        "The value provided was Nullable",
-      );
-      expect(Result.fromNullable(undefined).unwrapErr()).toBe(
-        "The value provided was Nullable",
-      );
+      expect(Result.fromNullable(null).unwrapErr()).toBe("The value provided was Nullable");
+      expect(Result.fromNullable(undefined).unwrapErr()).toBe("The value provided was Nullable");
     });
 
     it("fromNullableWith Error should return Err with provided error for null or undefined values", () => {
-      expect(
-        Result.fromNullableWithError(null, "Custom error").unwrapErr(),
-      ).toBe("Custom error");
-      expect(
-        Result.fromNullableWithError(undefined, { code: 404 }).unwrapErr(),
-      ).toEqual({ code: 404 });
+      expect(Result.fromNullableWithError(null, "Custom error").unwrapErr()).toBe("Custom error");
+      expect(Result.fromNullableWithError(undefined, { code: 404 }).unwrapErr()).toEqual({ code: 404 });
     });
 
     it("fromNullableWithError should throw ResultNonNullableError when both value and error are null", () => {
@@ -347,9 +332,7 @@ describe("Result", () => {
 
     it("fromNullableWithError should work with at least one being non-null", () => {
       expect(Result.fromNullableWithError(42, undefined).unwrap()).toBe(42);
-      expect(Result.fromNullableWithError(undefined, "error").unwrapErr()).toBe(
-        "error",
-      );
+      expect(Result.fromNullableWithError(undefined, "error").unwrapErr()).toBe("error");
     });
 
     it("try should return Err as Error for thrown errors", () => {
@@ -359,9 +342,7 @@ describe("Result", () => {
       expect(result.isErr()).toBe(true);
       const error = result.unwrapErr();
       expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBe(
-        "Test error",
-      );
+      expect(error.message).toBe("Test error");
     });
 
     it("try should return Err as Error for null or undefined results", () => {
@@ -382,9 +363,7 @@ describe("Result", () => {
       expect(result.isErr()).toBe(true);
       const error = result.unwrapErr();
       expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBe(
-        "Async test error",
-      );
+      expect(error.message).toBe("Async test error");
       expect(error).toBeInstanceOf(Error);
     });
 
@@ -396,6 +375,20 @@ describe("Result", () => {
       const undefinedResult = await Result.asyncTry(async () => undefined);
       expect(undefinedResult.isErr()).toBe(true);
       expect(undefinedResult.unwrapErr()).toBeInstanceOf(Error);
+    });
+
+    it("isResult should return false for non-Result values", () => {
+      expect(Result.isResult(42)).toBe(false);
+      expect(Result.isResult("string")).toBe(false);
+      expect(Result.isResult(null)).toBe(false);
+      expect(Result.isResult(undefined)).toBe(false);
+      expect(Result.isResult({})).toBe(false);
+      expect(Result.isResult([])).toBe(false);
+    });
+
+    it("isResult should return false for objects with similar structure", () => {
+      const fakeResult = { isOk: () => true, isErr: () => false };
+      expect(Result.isResult(fakeResult)).toBe(false);
     });
   });
 });
