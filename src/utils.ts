@@ -7,3 +7,7 @@ export function isNullable<T>(
 export function isNonNullable<T>(value: T): value is T {
   return !isNullable(value);
 }
+
+export function isPromise<T>(value: T | Promise<T>): value is Promise<T> {
+  return value instanceof Promise;
+}
