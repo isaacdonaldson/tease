@@ -46,7 +46,7 @@ export type Option<T> = Some<T> | None;
  * Represents a container for a non-null value.
  * @template T The type of the contained value.
  */
-class Some<T> {
+export class Some<T> {
   readonly _tag = "Some" as const;
 
   /**
@@ -198,7 +198,7 @@ class Some<T> {
 /**
  * Represents the absence of a value.
  */
-class None {
+export class None {
   readonly _tag = "None" as const;
 
   constructor() { }
