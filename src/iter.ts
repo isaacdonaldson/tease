@@ -94,9 +94,33 @@ class LazyIterator<T> implements Iterable<T> {
    * @returns {LazyIterator<T>} A new iterator with at most n elements
    */
   take(n: number): LazyIterator<T> {
-    let count = 0;
-    this.operations.push((value: T) => (count < n ? (count++, Option.some(value as NonNullable<T>)) : Option.none()));
-    return this;
+    if (n <= 0) {
+      return new LazyIterator([]);
+    }
+    return new LazyIterator(
+      function* (this: LazyIterator<T>) {
+        let count = 0;
+        for (const value of this.source) {
+          if (count === n) {
+            break;
+          }
+
+          let current = Option.some(value as NonNullable<T>) as Option<T>;
+
+          for (const op of this.operations) {
+            current = current.andThen(op) as Option<T>;
+            if (current.isNone()) {
+              break;
+            }
+          }
+
+          if (current.isSome()) {
+            yield current.unwrap();
+            count++;
+          }
+        }
+      }.call(this),
+    );
   }
 
   /**
