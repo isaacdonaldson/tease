@@ -1,6 +1,6 @@
-import { TaggedError } from "./error";
-import { Option } from "./option";
-import { Result } from "./result";
+import { TaggedError } from "./error.js";
+import { Option } from "./option.js";
+import { Result } from "./result.js";
 
 /**
  * Factory object for creating LazyIterator instances

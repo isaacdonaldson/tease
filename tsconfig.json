@@ -1,15 +1,23 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "composite": false,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "noEmitOnError": true,
+    "preserveSymlinks": true,
+    "preserveWatchOutput": true,
+    "resolveJsonModule": true,
     // Specify ECMAScript target version
     "target": "ES2018",
     // Specify module code generation
-    "module": "ESNext",
+    "module": "CommonJS",
     // List of library files to be included in the compilation
-    "lib": ["ESnext"],
+    "lib": ["ESnext", "ES2018"],
     // Generate corresponding .d.ts file
     "declaration": true,
     // Generate a sourcemap for each corresponding '.d.ts' file
-    "declarationMap": false,
+    "declarationMap": true,
     // Generates corresponding '.map' file
     "sourceMap": false,
     // Redirect output structure to the directory

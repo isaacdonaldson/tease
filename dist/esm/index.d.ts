@@ -3,3 +3,4 @@ export * from "./iter.js";
 export * from "./option.js";
 export * from "./result.js";
 export * from "./pipe.js";
+//# sourceMappingURL=index.d.ts.map

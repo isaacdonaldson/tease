@@ -1,10 +1,13 @@
-import { TaggedError } from "./error";
-import { Option } from "./option";
-import { Result } from "./result";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.IterFoldError = exports.IterSortByError = exports.IterGroupByError = exports.IterUnzipError = exports.IterCollectError = exports.IterNegativeNumberError = exports.Iterator = void 0;
+const error_js_1 = require("./error.js");
+const option_js_1 = require("./option.js");
+const result_js_1 = require("./result.js");
 /**
  * Factory object for creating LazyIterator instances
  */
-export const Iterator = {
+exports.Iterator = {
     /**
      * Creates a new LazyIterator from an iterable source
      * @template T The type of elements in the iterator
@@ -44,7 +47,7 @@ class LazyIterator {
      * @returns {LazyIterator<U>} A new iterator with transformed elements
      */
     map(fn) {
-        this.operations.push((value) => Option.some(fn(value)));
+        this.operations.push((value) => option_js_1.Option.some(fn(value)));
         return this;
     }
     /**
@@ -53,7 +56,7 @@ class LazyIterator {
      * @returns {LazyIterator<T>} A new iterator with filtered elements
      */
     filter(fn) {
-        this.operations.push((value) => (fn(value) ? Option.some(value) : Option.none()));
+        this.operations.push((value) => (fn(value) ? option_js_1.Option.some(value) : option_js_1.Option.none()));
         return this;
     }
     /**
@@ -81,7 +84,7 @@ class LazyIterator {
                 if (count === n) {
                     break;
                 }
-                let current = Option.some(value);
+                let current = option_js_1.Option.some(value);
                 for (const op of this.operations) {
                     current = current.andThen(op);
                     if (current.isNone()) {
@@ -102,7 +105,7 @@ class LazyIterator {
      */
     skip(n) {
         let count = 0;
-        this.operations.push((value) => (count++ < n ? Option.none() : Option.some(value)));
+        this.operations.push((value) => (count++ < n ? option_js_1.Option.none() : option_js_1.Option.some(value)));
         return this;
     }
     /**
@@ -113,7 +116,7 @@ class LazyIterator {
     nth(n) {
         const entry = this.skip(n).take(1).collect().ok();
         const valueArr = entry.unwrapOr([]);
-        return valueArr.length > 0 ? Option.some(valueArr[0]) : Option.none();
+        return valueArr.length > 0 ? option_js_1.Option.some(valueArr[0]) : option_js_1.Option.none();
     }
     /**
      * Returns the last element of the iterator
@@ -138,7 +141,7 @@ class LazyIterator {
     tap(fn) {
         this.operations.push((value) => {
             fn(value);
-            return Option.some(value);
+            return option_js_1.Option.some(value);
         });
         return this;
     }
@@ -157,9 +160,9 @@ class LazyIterator {
      */
     chunk(size) {
         if (size <= 0) {
-            return Result.err(new IterNegativeNumberError("Chunk size must be positive"));
+            return result_js_1.Result.err(new IterNegativeNumberError("Chunk size must be positive"));
         }
-        return Result.ok(new LazyIterator(function* () {
+        return result_js_1.Result.ok(new LazyIterator(function* () {
             let chunk = [];
             for (const value of this) {
                 chunk.push(value);
@@ -219,10 +222,10 @@ class LazyIterator {
                 first.push(a);
                 second.push(b);
             }
-            return Result.ok([first, second]);
+            return result_js_1.Result.ok([first, second]);
         }
         catch (e) {
-            return Result.err(new IterUnzipError(e instanceof Error ? e.message : "Failed to unzip"));
+            return result_js_1.Result.err(new IterUnzipError(e instanceof Error ? e.message : "Failed to unzip"));
         }
     }
     /**
@@ -241,10 +244,10 @@ class LazyIterator {
                 group.push(value);
                 groups.set(key, group);
             }
-            return Result.ok(groups);
+            return result_js_1.Result.ok(groups);
         }
         catch (e) {
-            return Result.err(new IterGroupByError(e instanceof Error ? e.message : "Failed to groupBy"));
+            return result_js_1.Result.err(new IterGroupByError(e instanceof Error ? e.message : "Failed to groupBy"));
         }
     }
     /**
@@ -255,10 +258,10 @@ class LazyIterator {
     sortBy(compareFn) {
         try {
             const sorted = [...this].sort(compareFn);
-            return Result.ok(new LazyIterator(sorted));
+            return result_js_1.Result.ok(new LazyIterator(sorted));
         }
         catch (e) {
-            return Result.err(new IterSortByError(e instanceof Error ? e.message : "Failed to sortBy"));
+            return result_js_1.Result.err(new IterSortByError(e instanceof Error ? e.message : "Failed to sortBy"));
         }
     }
     /**
@@ -269,10 +272,10 @@ class LazyIterator {
     find(predicate) {
         for (const value of this) {
             if (predicate(value)) {
-                return Option.some(value);
+                return option_js_1.Option.some(value);
             }
         }
-        return Option.none();
+        return option_js_1.Option.none();
     }
     /**
      * Finds the position of the first element matching a predicate
@@ -283,11 +286,11 @@ class LazyIterator {
         let index = 0;
         for (const value of this) {
             if (predicate(value)) {
-                return Option.some(index);
+                return option_js_1.Option.some(index);
             }
             index++;
         }
-        return Option.none();
+        return option_js_1.Option.none();
     }
     /**
      * Tests if any element satisfies the predicate
@@ -319,7 +322,7 @@ class LazyIterator {
         const iterator = this[Symbol.iterator]();
         const first = iterator.next();
         if (first.done) {
-            return Option.none();
+            return option_js_1.Option.none();
         }
         let result = first.value;
         while (true) {
@@ -329,7 +332,7 @@ class LazyIterator {
             }
             result = fn(result, next.value);
         }
-        return Option.some(result);
+        return option_js_1.Option.some(result);
     }
     /**
      * Folds the iterator into a single value using a provided initial value
@@ -344,10 +347,10 @@ class LazyIterator {
             for (const value of this) {
                 result = fn(result, value);
             }
-            return Result.ok(result);
+            return result_js_1.Result.ok(result);
         }
         catch (e) {
-            return Result.err(new IterFoldError(e instanceof Error ? e.message : "Failed to fold"));
+            return result_js_1.Result.err(new IterFoldError(e instanceof Error ? e.message : "Failed to fold"));
         }
     }
     /**
@@ -357,10 +360,10 @@ class LazyIterator {
     collect() {
         try {
             const result = Array.from(this.evaluate());
-            return Result.ok(this.reversed ? result.reverse() : result);
+            return result_js_1.Result.ok(this.reversed ? result.reverse() : result);
         }
         catch (e) {
-            return Result.err(new IterCollectError(e instanceof Error ? e.message : "Failed to collect"));
+            return result_js_1.Result.err(new IterCollectError(e instanceof Error ? e.message : "Failed to collect"));
         }
     }
     /**
@@ -370,7 +373,7 @@ class LazyIterator {
      */
     *evaluate() {
         for (const value of this.source) {
-            let current = Option.some(value);
+            let current = option_js_1.Option.some(value);
             for (const op of this.operations) {
                 current = current.andThen(op);
                 if (current.isNone()) {
@@ -386,54 +389,60 @@ class LazyIterator {
 /**
  * Error thrown when supplied a negative number
  */
-export class IterNegativeNumberError extends TaggedError {
+class IterNegativeNumberError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "IterNegativeNumberError";
     }
 }
+exports.IterNegativeNumberError = IterNegativeNumberError;
 /**
  * Error thrown when collecting a LazyIterator
  */
-export class IterCollectError extends TaggedError {
+class IterCollectError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "IterCollectError";
     }
 }
+exports.IterCollectError = IterCollectError;
 /**
  * Error thrown when unzipping anLazyIterator
  */
-export class IterUnzipError extends TaggedError {
+class IterUnzipError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "IterUnzipError";
     }
 }
+exports.IterUnzipError = IterUnzipError;
 /**
  * Error thrown when groupBy fails for a LazyIterator
  */
-export class IterGroupByError extends TaggedError {
+class IterGroupByError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "IterGroupByError";
     }
 }
+exports.IterGroupByError = IterGroupByError;
 /**
  * Error thrown when sortBy fails for a LazyIterator
  */
-export class IterSortByError extends TaggedError {
+class IterSortByError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "IterSortByError";
     }
 }
+exports.IterSortByError = IterSortByError;
 /**
  * Error thrown when fold fails for a LazyIterator
  */
-export class IterFoldError extends TaggedError {
+class IterFoldError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "IterFoldError";
     }
 }
+exports.IterFoldError = IterFoldError;

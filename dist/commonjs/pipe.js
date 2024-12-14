@@ -1,15 +1,21 @@
-import { TaggedError } from "./error";
-import { isPromise } from "./utils";
-import { Result } from "./result";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PipeArgumentError = void 0;
+exports.pipe = pipe;
+exports.syncPipe = syncPipe;
+const error_js_1 = require("./error.js");
+const utils_js_1 = require("./utils.js");
+const result_js_1 = require("./result.js");
 /**
  * Error thrown when a non-function is provided
  */
-export class PipeArgumentError extends TaggedError {
+class PipeArgumentError extends error_js_1.TaggedError {
     constructor() {
         super(...arguments);
         this._tag = "PipeArgumentError";
     }
 }
+exports.PipeArgumentError = PipeArgumentError;
 /**
  * Executes a series of functions in a pipeline, where the output of each function
  * becomes the input of the next. This function supports both synchronous and
@@ -33,8 +39,8 @@ export class PipeArgumentError extends TaggedError {
  * );
  * // result will be Result.ok("11") if successful
  */
-export async function pipe(startVal, ...fns) {
-    const pipeRes = await Result.asyncTry(async () => {
+async function pipe(startVal, ...fns) {
+    const pipeRes = await result_js_1.Result.asyncTry(async () => {
         let pipeCarry = startVal;
         for (const fn of fns) {
             if (typeof fn !== "function") {
@@ -42,16 +48,16 @@ export async function pipe(startVal, ...fns) {
             }
             let res;
             const fnResult = fn(pipeCarry);
-            if (isPromise(fnResult)) {
-                res = await Result.asyncTry(async () => await fnResult);
+            if ((0, utils_js_1.isPromise)(fnResult)) {
+                res = await result_js_1.Result.asyncTry(async () => await fnResult);
             }
             else {
-                res = Result.ok(fnResult);
+                res = result_js_1.Result.ok(fnResult);
             }
             if (res.isErr()) {
                 return res;
             }
-            else if (Result.isResult(res.unwrap())) {
+            else if (result_js_1.Result.isResult(res.unwrap())) {
                 const val = res.unwrap();
                 if (val.isErr()) {
                     return val;
@@ -68,13 +74,13 @@ export async function pipe(startVal, ...fns) {
     });
     if (pipeRes.isOk()) {
         const val = pipeRes.unwrap();
-        if (Result.isResult(val)) {
+        if (result_js_1.Result.isResult(val)) {
             const resVal = val;
             if (resVal.isErr()) {
                 return val;
             }
             else {
-                return Result.ok(resVal.unwrap());
+                return result_js_1.Result.ok(resVal.unwrap());
             }
         }
         else {
@@ -107,18 +113,18 @@ export async function pipe(startVal, ...fns) {
  * );
  * // result will be Result.ok("11") if successful
  */
-export function syncPipe(startVal, ...fns) {
-    const pipeRes = Result.try(() => {
+function syncPipe(startVal, ...fns) {
+    const pipeRes = result_js_1.Result.try(() => {
         let pipeCarry = startVal;
         for (const fn of fns) {
             if (typeof fn !== "function") {
                 throw new PipeArgumentError("All arguments must be functions");
             }
-            const res = Result.try(() => fn(pipeCarry));
+            const res = result_js_1.Result.try(() => fn(pipeCarry));
             if (res.isErr()) {
                 return res;
             }
-            else if (Result.isResult(res.unwrap())) {
+            else if (result_js_1.Result.isResult(res.unwrap())) {
                 const val = res.unwrap();
                 if (val.isErr()) {
                     return val;
@@ -135,13 +141,13 @@ export function syncPipe(startVal, ...fns) {
     });
     if (pipeRes.isOk()) {
         const val = pipeRes.unwrap();
-        if (Result.isResult(val)) {
+        if (result_js_1.Result.isResult(val)) {
             const resVal = val;
             if (resVal.isErr()) {
                 return val;
             }
             else {
-                return Result.ok(resVal.unwrap());
+                return result_js_1.Result.ok(resVal.unwrap());
             }
         }
         else {

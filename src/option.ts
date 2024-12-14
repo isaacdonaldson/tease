@@ -1,6 +1,6 @@
-import { TaggedError } from "./error";
-import { isNonNullable } from "./utils";
-import { Result } from "./result";
+import { TaggedError } from "./error.js";
+import { isNonNullable } from "./utils.js";
+import { Result } from "./result.js";
 
 // NOTE: we are doing this to keep api consistent with Result
 export const Option = {

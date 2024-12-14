@@ -1,4 +1,12 @@
-import { Result } from "./result";
+import { Result } from "./result.js";
+type DeferCallback = () => void;
+type DeferFn = (callback: DeferCallback) => void;
+type AsyncDeferCallback = () => void | Promise<void>;
+type AsyncDeferFn = (callback: AsyncDeferCallback) => void;
+type ErrdeferCallback<E> = (err: E) => void;
+type ErrdeferFn<E> = (callback: ErrdeferCallback<E>) => void;
+type AsyncErrdeferCallback<E> = (err: E) => void | Promise<void>;
+type AsyncErrdeferFn<E> = (callback: AsyncErrdeferCallback<E>) => void;
 /**
  * Executes an asynchronous function with deferred callbacks and error handling.
  * @template T The return type of the main function.
@@ -27,41 +35,7 @@ import { Result } from "./result";
  *   return "Success";
  * });
  */
-export async function withAsyncDefer(fn) {
-    const deferredCallbacks = [];
-    const defer = (deferCallback) => {
-        deferredCallbacks.unshift(deferCallback);
-    };
-    const errdeferredCallbacks = [];
-    const errdefer = (errdeferCallback) => {
-        errdeferredCallbacks.unshift(errdeferCallback);
-    };
-    try {
-        const result = await fn(defer, errdefer);
-        return Result.ok(result);
-    }
-    catch (err) {
-        errdeferredCallbacks.forEach(async (callback) => {
-            if (callback.constructor.name === "AsyncFunction") {
-                await callback(err);
-            }
-            else {
-                callback(err);
-            }
-        });
-        return Result.err(err);
-    }
-    finally {
-        deferredCallbacks.forEach(async (callback) => {
-            if (callback.constructor.name === "AsyncFunction") {
-                await callback();
-            }
-            else {
-                callback();
-            }
-        });
-    }
-}
+export declare function withAsyncDefer<T, E>(fn: (defer: AsyncDeferFn, errdefer: AsyncErrdeferFn<E>) => Promise<T>): Promise<Result<T, E>>;
 /**
  * Executes a function with deferred callbacks and error handling.
  * @template T The return type of the main function.
@@ -90,23 +64,6 @@ export async function withAsyncDefer(fn) {
  *   return "Success";
  * });
  */
-export function withDefer(fn) {
-    const deferredCallbacks = [];
-    const defer = (deferCallback) => {
-        deferredCallbacks.unshift(deferCallback);
-    };
-    const errdeferredCallbacks = [];
-    const errdefer = (errdeferCallback) => {
-        errdeferredCallbacks.unshift(errdeferCallback);
-    };
-    try {
-        return Result.ok(fn(defer, errdefer));
-    }
-    catch (err) {
-        errdeferredCallbacks.forEach((callback) => callback(err));
-        return Result.err(err);
-    }
-    finally {
-        deferredCallbacks.forEach((callback) => callback());
-    }
-}
+export declare function withDefer<T, E>(fn: (defer: DeferFn, errdefer: ErrdeferFn<E>) => T): Result<T, E>;
+export {};
+//# sourceMappingURL=defer.d.ts.map

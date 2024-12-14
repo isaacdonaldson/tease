@@ -1,6 +1,6 @@
-import { TaggedError } from "./error";
-import { Option } from "./option";
-import { Result } from "./result";
+import { TaggedError } from "./error.js";
+import { Option } from "./option.js";
+import { Result } from "./result.js";
 /**
  * Factory object for creating LazyIterator instances
  */
@@ -229,3 +229,4 @@ export declare class IterFoldError extends TaggedError {
     readonly _tag: "IterFoldError";
 }
 export {};
+//# sourceMappingURL=iter.d.ts.map

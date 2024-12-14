@@ -1,6 +1,6 @@
-import { TaggedError } from "./error";
-import { isNonNullable } from "./utils";
-import { Option } from "./option";
+import { TaggedError } from "./error.js";
+import { isNonNullable } from "./utils.js";
+import { Option } from "./option.js";
 
 // NOTE: exporting this object allows use to use try as a function
 // when it is a reserved keyword, can use like `Result.try`

@@ -1,6 +1,6 @@
-import { TaggedError } from "./error";
-import { isPromise } from "./utils";
-import { Result } from "./result";
+import { TaggedError } from "./error.js";
+import { isPromise } from "./utils.js";
+import { Result } from "./result.js";
 
 /**
  * Error thrown when a non-function is provided

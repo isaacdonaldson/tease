@@ -1,5 +1,5 @@
-import { TaggedError } from "./error";
-import { Result } from "./result";
+import { TaggedError } from "./error.js";
+import { Result } from "./result.js";
 /**
  * Error thrown when a non-function is provided
  */
@@ -62,3 +62,4 @@ type SyncPipeChain<Fns extends any[], Acc = unknown> = Fns extends [infer First,
  */
 export declare function syncPipe<Fns extends SyncFunction<any, any>[]>(startVal: unknown, ...fns: Fns): Result<SyncPipeChain<Fns>, Error>;
 export {};
+//# sourceMappingURL=pipe.d.ts.map
