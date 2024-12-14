@@ -1,14 +1,48 @@
 {
+  "name": "tease",
+  "version": "0.0.1",
+  "description": "A TypeScript utility library providing Rust-inspired error handling and functional programming patterns",
+  "author": "Isaac Donaldson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaacdonaldson/tease.git"
+  },
+  "bugs": {
+    "url": "https://github.com/isaacdonaldson/tease/issues"
+  },
+  "homepage": "https://github.com/isaacdonaldson/tease#readme",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "build": "npx tsc -p tsconfig.json",
-    "watch": "npx tsc -p tsconfig.json --watch"
+    "run:example": "npx tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json",
+    "postinstall": "npm run build",
+    "watch": "tsc -p tsconfig.json --watch"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.4",
     "typescript": "^5.5.4"
-  }
+  },
+  "keywords": [
+    "typescript",
+    "functional",
+    "error-handling",
+    "result",
+    "option",
+    "pipe",
+    "iterator"
+  ]
 }
