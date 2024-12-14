@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { TaggedError } from "./error.js";
 import { isNonNullable } from "./utils.js";
 import { Option } from "./option.js";
@@ -96,16 +87,14 @@ export const Result = {
      * @param {() => Promise<T>} fn - The asynchronous function to attempt to execute.
      * @returns {Promise<Result<T, Error>>} A promise that resolves to the result of the function execution.
      */
-    asyncTry(fn) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return Result.fromNullableWithError(yield fn(), new Error(""));
-            }
-            catch (e) {
-                const msg = e instanceof Error ? e.message : "An error was thrown during a Result.try call";
-                return Result.err(new Error(msg));
-            }
-        });
+    async asyncTry(fn) {
+        try {
+            return Result.fromNullableWithError(await fn(), new Error(""));
+        }
+        catch (e) {
+            const msg = e instanceof Error ? e.message : "An error was thrown during a Result.try call";
+            return Result.err(new Error(msg));
+        }
     },
 };
 /**

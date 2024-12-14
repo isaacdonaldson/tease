@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { Result } from "./result.js";
 /**
  * Executes an asynchronous function with deferred callbacks and error handling.
@@ -36,42 +27,40 @@ import { Result } from "./result.js";
  *   return "Success";
  * });
  */
-export function withAsyncDefer(fn) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const deferredCallbacks = [];
-        const defer = (deferCallback) => {
-            deferredCallbacks.unshift(deferCallback);
-        };
-        const errdeferredCallbacks = [];
-        const errdefer = (errdeferCallback) => {
-            errdeferredCallbacks.unshift(errdeferCallback);
-        };
-        try {
-            const result = yield fn(defer, errdefer);
-            return Result.ok(result);
-        }
-        catch (err) {
-            errdeferredCallbacks.forEach((callback) => __awaiter(this, void 0, void 0, function* () {
-                if (callback.constructor.name === "AsyncFunction") {
-                    yield callback(err);
-                }
-                else {
-                    callback(err);
-                }
-            }));
-            return Result.err(err);
-        }
-        finally {
-            deferredCallbacks.forEach((callback) => __awaiter(this, void 0, void 0, function* () {
-                if (callback.constructor.name === "AsyncFunction") {
-                    yield callback();
-                }
-                else {
-                    callback();
-                }
-            }));
-        }
-    });
+export async function withAsyncDefer(fn) {
+    const deferredCallbacks = [];
+    const defer = (deferCallback) => {
+        deferredCallbacks.unshift(deferCallback);
+    };
+    const errdeferredCallbacks = [];
+    const errdefer = (errdeferCallback) => {
+        errdeferredCallbacks.unshift(errdeferCallback);
+    };
+    try {
+        const result = await fn(defer, errdefer);
+        return Result.ok(result);
+    }
+    catch (err) {
+        errdeferredCallbacks.forEach(async (callback) => {
+            if (callback.constructor.name === "AsyncFunction") {
+                await callback(err);
+            }
+            else {
+                callback(err);
+            }
+        });
+        return Result.err(err);
+    }
+    finally {
+        deferredCallbacks.forEach(async (callback) => {
+            if (callback.constructor.name === "AsyncFunction") {
+                await callback();
+            }
+            else {
+                callback();
+            }
+        });
+    }
 }
 /**
  * Executes a function with deferred callbacks and error handling.

@@ -1,12 +1,3 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 import { TaggedError } from "./error.js";
 import { isPromise } from "./utils.js";
 import { Result } from "./result.js";
@@ -42,59 +33,57 @@ export class PipeArgumentError extends TaggedError {
  * );
  * // result will be Result.ok("11") if successful
  */
-export function pipe(startVal, ...fns) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const pipeRes = yield Result.asyncTry(() => __awaiter(this, void 0, void 0, function* () {
-            let pipeCarry = startVal;
-            for (const fn of fns) {
-                if (typeof fn !== "function") {
-                    throw new PipeArgumentError("All arguments must be functions");
-                }
-                let res;
-                const fnResult = fn(pipeCarry);
-                if (isPromise(fnResult)) {
-                    res = yield Result.asyncTry(() => __awaiter(this, void 0, void 0, function* () { return yield fnResult; }));
-                }
-                else {
-                    res = Result.ok(fnResult);
-                }
-                if (res.isErr()) {
-                    return res;
-                }
-                else if (Result.isResult(res.unwrap())) {
-                    const val = res.unwrap();
-                    if (val.isErr()) {
-                        return val;
-                    }
-                    else {
-                        pipeCarry = val.unwrap();
-                    }
-                }
-                else {
-                    pipeCarry = res.unwrap();
-                }
+export async function pipe(startVal, ...fns) {
+    const pipeRes = await Result.asyncTry(async () => {
+        let pipeCarry = startVal;
+        for (const fn of fns) {
+            if (typeof fn !== "function") {
+                throw new PipeArgumentError("All arguments must be functions");
             }
-            return pipeCarry;
-        }));
-        if (pipeRes.isOk()) {
-            const val = pipeRes.unwrap();
-            if (Result.isResult(val)) {
-                const resVal = val;
-                if (resVal.isErr()) {
+            let res;
+            const fnResult = fn(pipeCarry);
+            if (isPromise(fnResult)) {
+                res = await Result.asyncTry(async () => await fnResult);
+            }
+            else {
+                res = Result.ok(fnResult);
+            }
+            if (res.isErr()) {
+                return res;
+            }
+            else if (Result.isResult(res.unwrap())) {
+                const val = res.unwrap();
+                if (val.isErr()) {
                     return val;
                 }
                 else {
-                    return Result.ok(resVal.unwrap());
+                    pipeCarry = val.unwrap();
                 }
             }
             else {
-                return pipeRes;
+                pipeCarry = res.unwrap();
+            }
+        }
+        return pipeCarry;
+    });
+    if (pipeRes.isOk()) {
+        const val = pipeRes.unwrap();
+        if (Result.isResult(val)) {
+            const resVal = val;
+            if (resVal.isErr()) {
+                return val;
+            }
+            else {
+                return Result.ok(resVal.unwrap());
             }
         }
         else {
             return pipeRes;
         }
-    });
+    }
+    else {
+        return pipeRes;
+    }
 }
 /**
  * Executes a series of synchronous functions in a pipeline, where the output of each
