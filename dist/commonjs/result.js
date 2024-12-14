@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResultNonNullableError = exports.ResultUnwrapError = exports.Result = void 0;
 const error_js_1 = require("./error.js");
@@ -90,14 +99,16 @@ exports.Result = {
      * @param {() => Promise<T>} fn - The asynchronous function to attempt to execute.
      * @returns {Promise<Result<T, Error>>} A promise that resolves to the result of the function execution.
      */
-    async asyncTry(fn) {
-        try {
-            return exports.Result.fromNullableWithError(await fn(), new Error(""));
-        }
-        catch (e) {
-            const msg = e instanceof Error ? e.message : "An error was thrown during a Result.try call";
-            return exports.Result.err(new Error(msg));
-        }
+    asyncTry(fn) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return exports.Result.fromNullableWithError(yield fn(), new Error(""));
+            }
+            catch (e) {
+                const msg = e instanceof Error ? e.message : "An error was thrown during a Result.try call";
+                return exports.Result.err(new Error(msg));
+            }
+        });
     },
 };
 /**
