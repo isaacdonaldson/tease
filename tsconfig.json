@@ -50,7 +50,7 @@
     "noFallthroughCasesInSwitch": true
   },
   // Specifies a list of glob patterns that match files to be included in compilation
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "include": ["src/**/*.ts"],
   // Specifies a list of files to be excluded from compilation
   "exclude": ["node_modules", "dist"]
 }
