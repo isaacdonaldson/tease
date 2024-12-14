@@ -24,7 +24,6 @@
     "test:coverage": "jest --coverage",
     "run:example": "npx tsc -p tsconfig.json",
     "build": "tsc -p tsconfig.json",
-    "postinstall": "npm run build",
     "watch": "tsc -p tsconfig.json --watch"
   },
   "peerDependencies": {
