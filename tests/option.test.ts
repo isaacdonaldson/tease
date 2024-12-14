@@ -1,5 +1,5 @@
-import { Option } from "../src/option";
-import { Result } from "./result";
+import { Option } from "@/option";
+import { Result } from "@/result";
 
 describe("Option", () => {
   describe("Some", () => {

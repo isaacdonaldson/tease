@@ -1,6 +1,6 @@
 
-import { Iterator } from "./iter";
-import { Option } from "./option";
+import { Iterator } from "@/iter";
+import { Option } from "@/option";
 
 describe("LazyIterator", () => {
   describe("Lazy Evaluation", () => {

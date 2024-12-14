@@ -1,4 +1,4 @@
-import { TaggedError, isTaggedError } from "./error";
+import { TaggedError, isTaggedError } from "@/error";
 
 describe("TaggedError", () => {
   it("should have a _tag property", () => {

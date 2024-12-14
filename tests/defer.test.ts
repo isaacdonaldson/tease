@@ -1,5 +1,5 @@
-import { withDefer, withAsyncDefer } from './defer';
-import { Result } from './result';
+import { withDefer, withAsyncDefer } from '@/defer';
+import { Result } from "@/result";
 
 describe('withDefer', () => {
   it('should execute the main function and return its result', () => {

@@ -1,5 +1,5 @@
-import { syncPipe, pipe } from "./pipe";
-import { Result } from "./result";
+import { syncPipe, pipe } from "@/pipe";
+import { Result } from "@/result";
 
 describe("pipe function", () => {
   it("should execute a single function correctly", () => {

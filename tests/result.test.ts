@@ -1,5 +1,5 @@
-import { Result } from "./result";
-import { Option } from "./option";
+import { Result } from "@/result";
+import { Option } from "@/option";
 
 describe("Result", () => {
   describe("ok function", () => {
