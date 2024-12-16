@@ -9,11 +9,11 @@
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
     // Specify ECMAScript target version
-    "target": "es2018",
+    "target": "esnext",
     // Specify module code generation
     "module": "CommonJS",
     // List of library files to be included in the compilation
-    "lib": ["es2018", "dom"],
+    "lib": ["esnext"],
     // Generate corresponding .d.ts file
     "declaration": true,
     // Generate a sourcemap for each corresponding '.d.ts' file

@@ -24,13 +24,14 @@ exports.Iterator = {
  * @template T The type of elements in the iterator
  */
 class LazyIterator {
+    source;
+    operations = [];
+    reversed = false;
     /**
      * Creates a new LazyIterator
      * @param {Iterable<T>} source The source iterable
      */
     constructor(source) {
-        this.operations = [];
-        this.reversed = false;
         this.source = source;
     }
     /**
@@ -235,12 +236,11 @@ class LazyIterator {
      * @returns {Result<Map<K, T[]>, IterGroupByError>} A Result containing either a Map of grouped elements or an error
      */
     groupBy(keyFn) {
-        var _a;
         try {
             const groups = new Map();
             for (const value of this) {
                 const key = keyFn(value);
-                const group = (_a = groups.get(key)) !== null && _a !== void 0 ? _a : [];
+                const group = groups.get(key) ?? [];
                 group.push(value);
                 groups.set(key, group);
             }
@@ -390,59 +390,41 @@ class LazyIterator {
  * Error thrown when supplied a negative number
  */
 class IterNegativeNumberError extends error_js_1.TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "IterNegativeNumberError";
-    }
+    _tag = "IterNegativeNumberError";
 }
 exports.IterNegativeNumberError = IterNegativeNumberError;
 /**
  * Error thrown when collecting a LazyIterator
  */
 class IterCollectError extends error_js_1.TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "IterCollectError";
-    }
+    _tag = "IterCollectError";
 }
 exports.IterCollectError = IterCollectError;
 /**
  * Error thrown when unzipping anLazyIterator
  */
 class IterUnzipError extends error_js_1.TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "IterUnzipError";
-    }
+    _tag = "IterUnzipError";
 }
 exports.IterUnzipError = IterUnzipError;
 /**
  * Error thrown when groupBy fails for a LazyIterator
  */
 class IterGroupByError extends error_js_1.TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "IterGroupByError";
-    }
+    _tag = "IterGroupByError";
 }
 exports.IterGroupByError = IterGroupByError;
 /**
  * Error thrown when sortBy fails for a LazyIterator
  */
 class IterSortByError extends error_js_1.TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "IterSortByError";
-    }
+    _tag = "IterSortByError";
 }
 exports.IterSortByError = IterSortByError;
 /**
  * Error thrown when fold fails for a LazyIterator
  */
 class IterFoldError extends error_js_1.TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "IterFoldError";
-    }
+    _tag = "IterFoldError";
 }
 exports.IterFoldError = IterFoldError;

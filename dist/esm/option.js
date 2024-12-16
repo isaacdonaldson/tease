@@ -37,12 +37,13 @@ export const Option = {
  * @template T The type of the contained value.
  */
 export class Some {
+    value;
+    _tag = "Some";
     /**
      * @param {NonNullable<T>} value The non-null value to store.
      */
     constructor(value) {
         this.value = value;
-        this._tag = "Some";
     }
     /**
      * Checks if the Option is a Some value.
@@ -174,9 +175,8 @@ export class Some {
  * Represents the absence of a value.
  */
 export class None {
-    constructor() {
-        this._tag = "None";
-    }
+    _tag = "None";
+    constructor() { }
     /**
      * Checks if the Option is a Some value.
      * @returns {boolean} Always false for None.
@@ -309,8 +309,5 @@ export class None {
  * Error thrown when attempting to unwrap a None value.
  */
 export class OptionUnwrapError extends TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "OptionUnwrapError";
-    }
+    _tag = "OptionUnwrapError";
 }
