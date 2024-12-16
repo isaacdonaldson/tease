@@ -21,14 +21,13 @@ export const Iterator = {
  * @template T The type of elements in the iterator
  */
 class LazyIterator {
-    source;
-    operations = [];
-    reversed = false;
     /**
      * Creates a new LazyIterator
      * @param {Iterable<T>} source The source iterable
      */
     constructor(source) {
+        this.operations = [];
+        this.reversed = false;
         this.source = source;
     }
     /**
@@ -387,35 +386,53 @@ class LazyIterator {
  * Error thrown when supplied a negative number
  */
 export class IterNegativeNumberError extends TaggedError {
-    _tag = "IterNegativeNumberError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterNegativeNumberError";
+    }
 }
 /**
  * Error thrown when collecting a LazyIterator
  */
 export class IterCollectError extends TaggedError {
-    _tag = "IterCollectError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterCollectError";
+    }
 }
 /**
  * Error thrown when unzipping anLazyIterator
  */
 export class IterUnzipError extends TaggedError {
-    _tag = "IterUnzipError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterUnzipError";
+    }
 }
 /**
  * Error thrown when groupBy fails for a LazyIterator
  */
 export class IterGroupByError extends TaggedError {
-    _tag = "IterGroupByError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterGroupByError";
+    }
 }
 /**
  * Error thrown when sortBy fails for a LazyIterator
  */
 export class IterSortByError extends TaggedError {
-    _tag = "IterSortByError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterSortByError";
+    }
 }
 /**
  * Error thrown when fold fails for a LazyIterator
  */
 export class IterFoldError extends TaggedError {
-    _tag = "IterFoldError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterFoldError";
+    }
 }

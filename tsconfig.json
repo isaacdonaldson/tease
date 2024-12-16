@@ -9,11 +9,11 @@
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
     // Specify ECMAScript target version
-    "target": "esnext",
+    "target": "es2020",
     // Specify module code generation
     "module": "CommonJS",
     // List of library files to be included in the compilation
-    "lib": ["es2018", "DOM", "DOM.Iterable"],
+    "lib": ["es2020"],
     // Generate corresponding .d.ts file
     "declaration": true,
     // Generate a sourcemap for each corresponding '.d.ts' file

@@ -10,7 +10,10 @@ const result_js_1 = require("./result.js");
  * Error thrown when a non-function is provided
  */
 class PipeArgumentError extends error_js_1.TaggedError {
-    _tag = "PipeArgumentError";
+    constructor() {
+        super(...arguments);
+        this._tag = "PipeArgumentError";
+    }
 }
 exports.PipeArgumentError = PipeArgumentError;
 /**

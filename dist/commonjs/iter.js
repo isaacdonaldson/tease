@@ -24,14 +24,13 @@ exports.Iterator = {
  * @template T The type of elements in the iterator
  */
 class LazyIterator {
-    source;
-    operations = [];
-    reversed = false;
     /**
      * Creates a new LazyIterator
      * @param {Iterable<T>} source The source iterable
      */
     constructor(source) {
+        this.operations = [];
+        this.reversed = false;
         this.source = source;
     }
     /**
@@ -390,41 +389,59 @@ class LazyIterator {
  * Error thrown when supplied a negative number
  */
 class IterNegativeNumberError extends error_js_1.TaggedError {
-    _tag = "IterNegativeNumberError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterNegativeNumberError";
+    }
 }
 exports.IterNegativeNumberError = IterNegativeNumberError;
 /**
  * Error thrown when collecting a LazyIterator
  */
 class IterCollectError extends error_js_1.TaggedError {
-    _tag = "IterCollectError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterCollectError";
+    }
 }
 exports.IterCollectError = IterCollectError;
 /**
  * Error thrown when unzipping anLazyIterator
  */
 class IterUnzipError extends error_js_1.TaggedError {
-    _tag = "IterUnzipError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterUnzipError";
+    }
 }
 exports.IterUnzipError = IterUnzipError;
 /**
  * Error thrown when groupBy fails for a LazyIterator
  */
 class IterGroupByError extends error_js_1.TaggedError {
-    _tag = "IterGroupByError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterGroupByError";
+    }
 }
 exports.IterGroupByError = IterGroupByError;
 /**
  * Error thrown when sortBy fails for a LazyIterator
  */
 class IterSortByError extends error_js_1.TaggedError {
-    _tag = "IterSortByError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterSortByError";
+    }
 }
 exports.IterSortByError = IterSortByError;
 /**
  * Error thrown when fold fails for a LazyIterator
  */
 class IterFoldError extends error_js_1.TaggedError {
-    _tag = "IterFoldError";
+    constructor() {
+        super(...arguments);
+        this._tag = "IterFoldError";
+    }
 }
 exports.IterFoldError = IterFoldError;

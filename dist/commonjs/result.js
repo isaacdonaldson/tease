@@ -105,11 +105,6 @@ exports.Result = {
  * @template T The type of the contained success value.
  */
 class Ok {
-    value;
-    /**
-     * A constant tag to identify this instance as "Ok".
-     */
-    _tag = "Ok";
     /**
      * Creates an instance of Ok.
      *
@@ -117,6 +112,10 @@ class Ok {
      */
     constructor(value) {
         this.value = value;
+        /**
+         * A constant tag to identify this instance as "Ok".
+         */
+        this._tag = "Ok";
     }
     /**
      * Checks if the Result is Ok.
@@ -279,11 +278,6 @@ class Ok {
  * @template E The type of the contained error value.
  */
 class Err {
-    error;
-    /**
-     * A constant tag to identify this instance as "Err".
-     */
-    _tag = "Err";
     /**
      * Creates an instance of Err.
      *
@@ -291,6 +285,10 @@ class Err {
      */
     constructor(error) {
         this.error = error;
+        /**
+         * A constant tag to identify this instance as "Err".
+         */
+        this._tag = "Err";
     }
     /**
      * Checks if the Result is Ok.
@@ -455,7 +453,10 @@ class Err {
  * @extends TaggedError
  */
 class ResultUnwrapError extends error_js_1.TaggedError {
-    _tag = "ResultUnwrapError";
+    constructor() {
+        super(...arguments);
+        this._tag = "ResultUnwrapError";
+    }
 }
 exports.ResultUnwrapError = ResultUnwrapError;
 /**
@@ -463,6 +464,9 @@ exports.ResultUnwrapError = ResultUnwrapError;
  * @extends TaggedError
  */
 class ResultNonNullableError extends error_js_1.TaggedError {
-    _tag = "ResultNonNullableError ";
+    constructor() {
+        super(...arguments);
+        this._tag = "ResultNonNullableError ";
+    }
 }
 exports.ResultNonNullableError = ResultNonNullableError;
