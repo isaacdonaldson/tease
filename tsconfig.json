@@ -13,7 +13,7 @@
     // Specify module code generation
     "module": "CommonJS",
     // List of library files to be included in the compilation
-    "lib": ["esnext", "DOM.Iterable"],
+    "lib": ["es2018", "DOM", "DOM.Iterable"],
     // Generate corresponding .d.ts file
     "declaration": true,
     // Generate a sourcemap for each corresponding '.d.ts' file
