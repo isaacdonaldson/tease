@@ -5,10 +5,7 @@ import { Result } from "./result.js";
  * Error thrown when a non-function is provided
  */
 export class PipeArgumentError extends TaggedError {
-    constructor() {
-        super(...arguments);
-        this._tag = "PipeArgumentError";
-    }
+    _tag = "PipeArgumentError";
 }
 /**
  * Executes a series of functions in a pipeline, where the output of each function
