@@ -6,8 +6,11 @@ Can be installed with
 `$ npm install https://github.com/isaacdonaldson/tease`
 
 And then used with both JavaScript and TypeScript files. For example:
+
 `$ npx tsc index.ts --target esnext --lib esnext,dom --module commonjs --outDir dist`
+
 Then running:
+
 `$ node dist/index.js`
 
 # Result API
