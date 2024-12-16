@@ -1,6 +1,6 @@
 # tease
 
-A TypeScript utility library providing Zig-inspired error handling and functional iteration patterns.
+A TypeScript utility library providing functional-inspired error handling, iteration patterns, and composition.
 
 Can be installed with
 `$ npm install https://github.com/isaacdonaldson/tease`
